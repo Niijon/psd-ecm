@@ -12,6 +12,10 @@
 *.mk
 *.list
 *.map
+.directory
 
 # Makefile
 *~
+
+#Cube
+.settings
