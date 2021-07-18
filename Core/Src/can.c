@@ -282,7 +282,7 @@ void CanConfigFilter(CAN_HandleTypeDef chosen_network, uint8_t can_filter_bank,
 	can_filter_template.FilterMaskIdLow = 0x0000;
 //	can_filter_template.FilterMaskIdHigh = 0x290 << 5;	//0x111 << 5;
 //	can_filter_template.FilterMaskIdLow = 0x00000000;
-	can_filter_template.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+	can_filter_template.FilterFIFOAssignment = CAN_RX_FIFO0;
 	can_filter_template.FilterActivation = ENABLE;
 	can_filter_template.SlaveStartFilterBank = 14;
 
