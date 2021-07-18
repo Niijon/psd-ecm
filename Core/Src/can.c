@@ -30,7 +30,11 @@
 CanDataFrameInit can_frame_template;
 CAN_FilterTypeDef can_filter_template;
 CAN_RxHeaderTypeDef can_rx_header;
+CAN_TxHeaderTypeDef can_tx_header;
 uint8_t can_rx_data[8];
+uint8_t TxData[8];
+uint8_t count = 0;
+uint32_t TxMailbox;
 CanDataFrameInit can_rx_frame_template;
 
 uint32_t can_tx_mailbox;
@@ -486,6 +490,29 @@ void CanClearRxDataFrame(CanDataFrameInit *ptr_can_frame_template) {
 	ptr_can_frame_template->rx_data[6] = 0x0;
 	ptr_can_frame_template->rx_data[7] = 0x0;
 }
+
+void HAL_CAN_RxFifoMsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+	count++;
+}
+
+void CAN1_Enabled()
+{
+	HAL_CAN_Start(&hcan1);
+	HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
+
+	can_tx_header.DLC = 1;
+	can_tx_header.ExtId = 0;
+	can_tx_header.IDE = CAN_ID_STD;
+	can_tx_header.RTR = CAN_RTR_DATA;
+	can_tx_header.StdId = 0x103;
+	can_tx_header.TransmitGlobalTime = DISABLE;
+
+	HAL_CAN_AddTxMessage(&hcan1, &can_tx_header, TxData, TxMailbox);
+
+}
+
+
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
