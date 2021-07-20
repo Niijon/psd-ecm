@@ -41,7 +41,7 @@ void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
-void OptoInputsRisingFalling(input_port, input_pin, lights_id);
+//void OptoInputsRisingFalling(input_port, input_pin, lights_id);
 
 
 

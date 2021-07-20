@@ -137,18 +137,18 @@ void MX_GPIO_Init(void)
  * @brief: store incoming lights cuff switches and send over can to lights controller
  *
  **/
-void OptoInputsRisingFalling(input_port, input_pin, lights_id) {
-	if (HAL_GPIO_ReadPin(input_port, input_pin)
-			== GPIO_PIN_SET) {
-		CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id,
-				&can_frame_template, 3, SDO_UPLOAD, lights_id, 0x01, 0, 0, 0, 0, 0);
-
-	} else if (HAL_GPIO_ReadPin(OPTO_INPUT1_GPIO_Port, OPTO_INPUT1_Pin)
-			== GPIO_PIN_RESET) {
-		CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id,
-				&can_frame_template, 3, SDO_UPLOAD, lights_id, 0x00, 0, 0, 0, 0, 0);
-	}
-}
+//void OptoInputsRisingFalling(input_port, input_pin, lights_id) {
+//	if (HAL_GPIO_ReadPin(input_port, input_pin)
+//			== GPIO_PIN_SET) {
+//		CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id,
+//				&can_frame_template, 3, SDO_UPLOAD, lights_id, 0x01, 0, 0, 0, 0, 0);
+//
+//	} else if (HAL_GPIO_ReadPin(OPTO_INPUT1_GPIO_Port, OPTO_INPUT1_Pin)
+//			== GPIO_PIN_RESET) {
+//		CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id,
+//				&can_frame_template, 3, SDO_UPLOAD, lights_id, 0x00, 0, 0, 0, 0, 0);
+//	}
+//}
 
 /*
  * @brief: black UPS relay - it should be HIGH in normal condidions

@@ -213,7 +213,7 @@ void EXTI1_IRQHandler(void) {
 	 OPTO-INPUTS INTERRUPT HANDLING
 	 ************************************************************************************************/
 	/* opto input 1 - long lights */
-	OptoInputsRisingFalling(OPTO_INPUT1_GPIO_Port, OPTO_INPUT1_Pin, 0x01);
+//	OptoInputsRisingFalling(OPTO_INPUT1_GPIO_Port, OPTO_INPUT1_Pin, 0x01);
 
 	/* USER CODE END EXTI1_IRQn 1 */
 }
@@ -232,7 +232,7 @@ void EXTI2_IRQHandler(void) {
 	 OPTO-INPUTS INTERRUPT HANDLING
 	 ************************************************************************************************/
 	/* opto input 2 - long lights */
-	OptoInputsRisingFalling(OPTO_INPUT2_GPIO_Port, OPTO_INPUT2_Pin, 0x01);
+//	OptoInputsRisingFalling(OPTO_INPUT2_GPIO_Port, OPTO_INPUT2_Pin, 0x01);
 
 	/* USER CODE END EXTI2_IRQn 1 */
 }
@@ -251,7 +251,7 @@ void EXTI3_IRQHandler(void) {
 	 OPTO-INPUTS INTERRUPT HANDLING
 	 ************************************************************************************************/
 	/* opto input 3 - right indicator */
-	OptoInputsRisingFalling(OPTO_INPUT3_GPIO_Port, OPTO_INPUT3_Pin, 0x02);
+//	OptoInputsRisingFalling(OPTO_INPUT3_GPIO_Port, OPTO_INPUT3_Pin, 0x02);
 
 	/* USER CODE END EXTI3_IRQn 1 */
 }
@@ -270,7 +270,7 @@ void EXTI4_IRQHandler(void) {
 	 OPTO-INPUTS INTERRUPT HANDLING
 	 ************************************************************************************************/
 	/* opto input - left indicator4 */
-	OptoInputsRisingFalling(OPTO_INPUT4_GPIO_Port, OPTO_INPUT4_Pin, 0x03);
+//	OptoInputsRisingFalling(OPTO_INPUT4_GPIO_Port, OPTO_INPUT4_Pin, 0x03);
 
 	/* USER CODE END EXTI4_IRQn 1 */
 }
@@ -390,7 +390,7 @@ void EXTI9_5_IRQHandler(void) {
 	/* opto input 7 - reverse lights */
 //	OptoInputsRisingFalling(OPTO_INPUT7_GPIO_Port, OPTO_INPUT7_Pin, 0x07);
 	/* opto input 8 - day lights */
-	OptoInputsRisingFalling(OPTO_INPUT8_GPIO_Port, OPTO_INPUT8_Pin, 0x08);
+//	OptoInputsRisingFalling(OPTO_INPUT8_GPIO_Port, OPTO_INPUT8_Pin, 0x08);
 	/* opto input 9 - on/off */
 
 	/* opto input 10 - keys */
