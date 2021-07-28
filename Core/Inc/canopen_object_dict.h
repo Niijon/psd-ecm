@@ -83,9 +83,10 @@ CanopenNode inverter_2;				// ECM
 CanopenNode mppt_1;					// ECM
 CanopenNode mppt_2;					// ECM
 CanopenNode mppt_3;					// ECM
-CanopenNode ecm;						// MPPTs, Inverters, Dashboard, Lights controller
+CanopenNode ecm;
+CanopenNode bms;	                // MPPTs, Inverters, Dashboard, Lights controller
 CanopenNode lights_controller;		// ECM
-CanopenNode bms;						// ECM
+					// ECM
 
 void CanopenObjectDictInit();
 
