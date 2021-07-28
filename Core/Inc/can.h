@@ -91,7 +91,6 @@ void CanSendSdo(CAN_HandleTypeDef chosen_network, uint8_t frame_sdo_id,
 		uint8_t command_byte, uint8_t byte0, uint8_t byte1, uint8_t byte2,
 		uint8_t byte3, uint8_t byte4, uint8_t byte5, uint8_t byte6);
 
-void CAN1_Enabled();
 /* USER CODE END Private defines */
 
 void MX_CAN1_Init(void);
