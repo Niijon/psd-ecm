@@ -156,22 +156,30 @@ int main(void)
 
 		HAL_Delay(1000);
 
-			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
-					&can_frame_template);
-			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
-					&can_frame_template);
-			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
-					&can_frame_template);
-			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
-					&can_frame_template);
-			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
-					&can_frame_template);
-			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
-					&can_frame_template);
-			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
-					&can_frame_template);
-			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
-					&can_frame_template);
+//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
+//					&can_frame_template);
+//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
+//					&can_frame_template);
+//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
+//					&can_frame_template);
+//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
+//					&can_frame_template);
+//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
+//					&can_frame_template);
+//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
+//					&can_frame_template);
+//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
+//					&can_frame_template);
+//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
+//					&can_frame_template);
+
+		//initializing data upload
+		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 0, 1, 0, 0, 0, 0, 0, 0, 0);
+
+		//actual data upload.
+		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 2, 2, 0, 0, 0, 0, 0, 0, 0);
+
+
 
     /* USER CODE END WHILE */
 
