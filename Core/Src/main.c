@@ -173,11 +173,17 @@ int main(void)
 //			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
 //					&can_frame_template);
 
-		//initializing data upload
-		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 0, 1, 0, 0, 0, 0, 0, 0, 0);
+//		//initializing data upload
+//		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 0, 1, 0, 0, 0, 0, 0, 0, 0);
 
 		//actual data upload.
-		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 2, 2, 0, 0, 0, 0, 0, 0, 0);
+		//CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 2, 2, 0, 0, 0, 0, 0, 0, 0);
+
+
+		//PDO transfer testing
+		CanSendPdo(CAN_HIGH_SPEED, bms.pdo_consumer_id, 2, &can_frame_template, 0, 0, 0, 0, 0, 0, 0, 0);
+
+
 
 
 
