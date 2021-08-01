@@ -273,7 +273,7 @@ static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
   /* USER CODE BEGIN 11 */
 	USBD_CDC_SetRxBuffer(&hUsbDeviceHS, &Buf[0]);
 	USBD_CDC_ReceivePacket(&hUsbDeviceHS);
-	strlcpy(usb_received_data, Buf, &Len + 1);
+	strlcpy(usb_received_data, Buf, *Len + 1);
 
 	if (usb_received_data[0] == '1') {
 		HAL_GPIO_WritePin(LED_D4_GPIO_Port, LED_D4_Pin, GPIO_PIN_SET);
