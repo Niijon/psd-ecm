@@ -60,18 +60,33 @@ typedef domain_t DOMAIN;
 #define SDO_Download				0b00101111
 #define SDO_Upload					0b0100
 
+
 typedef struct {
+	//Individual ID of node
 	UNSIGNED8 node_id;
+
+	//Index of node
 	UNSIGNED16 index;
 	UNSIGNED8 subindex_1;
 	UNSIGNED8 subindex_2;
 	UNSIGNED8 subindex_3;
+
+	//ID of SDO protocol that we are using to send data
 	UNSIGNED32 sdo_upload_id;
+
+	//ID of SDO protocol used to receive data
 	UNSIGNED32 sdo_download_id;
+
+	//ID of PDO protocol used to receive data
 	UNSIGNED32 pdo_consumer_id;
+
+	//ID of PDO protocol that we are using to send data
 	UNSIGNED32 pdo_producer_id;
+
+	//Emergency ID used to send data about ongoing emergency of node
 	UNSIGNED8 emcy_id;
 } CanopenNode;
+
 
 /*******************************************************************************
  OBJECT DICTIONARY

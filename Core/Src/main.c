@@ -124,25 +124,36 @@ int main(void)
 
 	HAL_TIM_Base_Start_IT(&htim10);
 
+//	setTxMessage(&can_frame_template, 1, 1, 2, 3, 5, 4, 0, 0);
+
 	/************************************************************************************************
 	 TURNING ON THE MODULES
 	 ************************************************************************************************/
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
-			&can_frame_template);
+
+//
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
+//			&can_frame_template);
+//	HAL_Delay(100);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
+//			&can_frame_template);
+//	HAL_Delay(100);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
+//			&can_frame_template);
+//	HAL_Delay(100);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
+//			&can_frame_template);
+//	HAL_Delay(100);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
+//			&can_frame_template);
+//	HAL_Delay(100);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
+//			&can_frame_template);
+//	HAL_Delay(100);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
+//			&can_frame_template);
+//	HAL_Delay(100);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
+//			&can_frame_template);
 	/************************************************************************************************
 	 USB
 	 ************************************************************************************************/
@@ -153,39 +164,29 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-
-		HAL_Delay(1000);
-
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
+//		HAL_Delay(100);
+//		CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
 //					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
-//					&can_frame_template);
-
-//		//initializing data upload
-//		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 0, 1, 0, 0, 0, 0, 0, 0, 0);
-
 		//actual data upload.
-		//CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 2, 2, 0, 0, 0, 0, 0, 0, 0);
+//		HAL_Delay(100);
+//		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 7, 1, 2, 3, 4, 5, 6, 7, 8);
 
+		HAL_Delay(100);
+		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_download_id, &can_frame_template , 7, 8, 7, 6, 5, 4, 3, 2, 1);
 
-		//PDO transfer testing
-		CanSendPdo(CAN_HIGH_SPEED, bms.pdo_consumer_id, 2, &can_frame_template, 0, 0, 0, 0, 0, 0, 0, 0);
+//
+////
+////		PDO transfer testing
+//
+//		HAL_Delay(100);
+//		CanSendPdo(CAN_HIGH_SPEED, bms.pdo_consumer_id, 7, &can_frame_template, 0, 4, 0, 1, 2, 0, 0, 0);
 
-
-
-
+//		//Testing receiving messages.
+//		CanSaveReceivedData(CAN_HIGH_SPEED, &can_rx_frame_template);
+//		HAL_Delay(1000);
+//
+//		CanSendSdo(CAN_HIGH_SPEED, 10, &can_frame_template, 3, can_rx_frame_template.rx_data[0], can_rx_frame_template.rx_data[1], can_rx_frame_template.rx_data[2], 0, 0, 0, 0, 0);
+//		HAL_Delay(1000);
 
     /* USER CODE END WHILE */
 

@@ -55,6 +55,8 @@ void CanopenObjectDictInit() {
 	bms.node_id = 0x05;
 	bms.pdo_producer_id = 0x185;			// 0x185 - 0x196
 	bms.emcy_id = 0x85;
+	bms.sdo_download_id = 0x15;
+	bms.sdo_upload_id = 0x69;
 
 	lights_controller.node_id = 0x50;
 	lights_controller.pdo_consumer_id = 0x581;

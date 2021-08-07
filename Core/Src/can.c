@@ -19,7 +19,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
-
 /* USER CODE BEGIN 0 */
 #include "usbd_cdc_if.h"
 #include "canopen_object_dict.h"
@@ -490,8 +489,6 @@ void CanClearRxDataFrame(CanDataFrameInit *ptr_can_frame_template) {
 	ptr_can_frame_template->rx_data[6] = 0x0;
 	ptr_can_frame_template->rx_data[7] = 0x0;
 }
-
-
 
 
 /* USER CODE END 1 */
