@@ -68,28 +68,18 @@ typedef domain_t DOMAIN;
 //	uint8_t rx_data[8];
 //} CanDataFrameInit;
 
-typedef struct
+typedef struct CanFrameBase
 {
-	//Data storage for message
-	uint8_t data[8];
-
-	//variable to store data that is going to be sent in CAN message(HAL integration)
-	CAN_TxHeaderTypeDef tx_header;
-} CanDataFrameTxMessage;
-
-typedef struct
-{
-	//variable to store data that is going to be received in CAN message(HAL integration)
-	CAN_RxHeaderTypeDef rx_header;
-
-	//Data storage for message
-	uint8_t data[8];
-} CanDataFrameRxMessage;
+	//Frame StdId - ID of individual frame;
+	UNSIGNED32 ID;
+	UNSIGNED32 DLC;
+	UNSIGNED8 AdditionalData;
+} CanFrameBase;
 
 typedef struct
 {
-	//Individual ID of node
-	UNSIGNED8 node_id;
+	//Data storage
+	UNSIGNED32 node_id;
 
 	//Index of node
 	UNSIGNED16 index;
@@ -113,169 +103,171 @@ typedef struct
 	UNSIGNED8 emcy_id;
 } CanopenNode;
 
-typedef struct
+typedef struct Dashboard
 {
-	//Individual ID of a node
-	UNSIGNED8 node_id;
+	//Data storage
+	UNSIGNED8 Data[8];
 
 	/*Sending messages from ECM perspective*/
 
 	//TSDO Upload: Lights (0x01 - postojowe; 0x02 - dzienne; 0x03 - długie; 0x04 - przeciwmgielne; 0x05 - kierunkowskaz lewy; 0x06 - kierunkowskaz prawy; 0x07 - awaryjne) Other (0x01 - pasy bezpieczeństwa; 0x02 - otwarte drzwi; 0x03) EMCY (Contains device ID and error code)
 	//Receiver: Dashboard, Lights controller
 	//Sender: ECM
-	CanDataFrameTxMessage LightsSDO;
+	CanFrameBase LightsSDO;
 
 	//TPDO: Output power in kW (bytes 0-1); Battery charge level (bytes 2-3); Average temperature (bytes 4-6)
 	//Receiver: Dashboard
 	//Sender: ECM
-	CanDataFrameTxMessage BMSInformationFramePDO;
+	CanFrameBase BMSInformationFramePDO;
 
 	//TPDO: Consumed power in kW (bytes 0-3) & Vehicle speed (bytes 4-7)
 	//Receiver: Dashboard
 	//Sender: ECM
-	CanDataFrameTxMessage Inverter1ConsumedPowerPDO;
+	CanFrameBase Inverter1ConsumedPowerPDO;
 
 	//TPDO: Consumed power in kW (bytes 0-3) & Vehicle speed (bytes 4-7)
 	//Receiver: Dashboard
 	//Sender: ECM
-	CanDataFrameTxMessage Inverter2ConsumedPowerPDO;
+	CanFrameBase Inverter2ConsumedPowerPDO;
 } Dashboard;
 
-typedef struct
+typedef struct BMS
 {
+	//Data storage
+	UNSIGNED8 Data[8];
 	/*Receiving Messages from ECM perspective*/
 	//EMCY: DATA0 contains error information from 0x0 - 0x5. 0 - over voltage; 1 - undervoltage; 2 - over current; 3 - over temperature; 4 - under temperature; 5 - MPPTs powered off info
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage ErrorFrameEMCY;
+	CanFrameBase ErrorFrameEMCY;
 
 	//TPDO: 1-4 of 29 battery voltages. Each voltage consists of two data bytes
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage BatteryVoltageFrame1_4PDO;
+	CanFrameBase BatteryVoltageFrame1_4PDO;
 	//TPDO: 5-8 of 29 battery voltages. Each voltage consists of two data bytes
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage BatteryVoltageFrame5_8PDO;
+	CanFrameBase BatteryVoltageFrame5_8PDO;
 
 	//TPDO: 9-12 of 29 battery voltages. Each voltage consists of two data bytes
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage BatteryVoltageFrame9_12PDO;
+	CanFrameBase BatteryVoltageFrame9_12PDO;
 
 	//TPDO: 13-16 of 29 battery voltages. Each voltage consists of two data bytes
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage BatteryVoltageFrame13_16PDO;
+	CanFrameBase BatteryVoltageFrame13_16PDO;
 
 	//TPDO: 17-20 of 29 battery voltages. Each voltage consists of two data bytes
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage BatteryVoltageFrame17_20PDO;
+	CanFrameBase BatteryVoltageFrame17_20PDO;
 
 	//TPDO: 21-24 of 29 battery voltages. Each voltage consists of two data bytes
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage BatteryVoltageFrame21_24PDO;
+	CanFrameBase BatteryVoltageFrame21_24PDO;
 
 	//TPDO: 25-28 of 29 battery voltages. Each voltage consists of two data bytes
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage BatteryVoltageFrame25_28PDO;
+	CanFrameBase BatteryVoltageFrame25_28PDO;
 
 	//TPDO: 29 of 29 battery voltages. Each voltage consists of two data bytes. 2 B - 4 B declare battery current
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage BatteryVoltageFrame29PDO;
+	CanFrameBase BatteryVoltageFrame29PDO;
 
 	//TPDO: 1-4 of 12 battery temperatures. Each temperature consists of two data bytes
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage BatteryTemperatur1_4PDO;
+	CanFrameBase BatteryTemperatur1_4PDO;
 
 	//TPDO: 5-8 of 12 battery temperatures. Each temperature consists of two data bytes
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage BatteryTemperatur5_8PDO;
+	CanFrameBase BatteryTemperatur5_8PDO;
 
 	//TPDO: 9-12 of 12 battery temperatures. Each temperature consists of two data bytes
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage BatteryTemperatur9_12PDO;
+	CanFrameBase BatteryTemperatur9_12PDO;
 
 	//TPDO: Output power in kW (bytes 0-1); Battery charge level (bytes 2-3); Average temperature (bytes 4-6)
 	//Receiver: EMC
 	//Sender: BMS
-	CanDataFrameRxMessage OutputPowerInkW;
+	CanFrameBase OutputPowerInkW;
 } BMS;
 
-typedef struct
+typedef struct Inverter
 {
 	//Individual ID of a node
-	UNSIGNED8 node_id;
+	UNSIGNED8 Data[8];
 
 	/*Receiving Messages from ECM perspective*/
 	//EMCY: DATA0 contains error information.
 	//Sender: Inverter
-	CanDataFrameRxMessage ErrorFrameEMCY;
+	CanFrameBase ErrorFrameEMCY;
 
 	//TPDO: Inverter temperature (0-3 B) & Engine temperature (4-7 B)
 	//Receiver: EMC
 	//Sender: Inverter
-	CanDataFrameRxMessage TemperatureFrameTPDO;
+	CanFrameBase TemperatureFrameTPDO;
 
 	//TPDO: Phase current no. 1
 	//Receiver: EMC
 	//Sender: Inverter
-	CanDataFrameRxMessage Phase1CurrentFrameTPDO;
+	CanFrameBase Phase1CurrentFrameTPDO;
 
 	//TPDO: Phase current no. 2
 	//Receiver: EMC
 	//Sender: Inverter
-	CanDataFrameRxMessage Phase2CurrentFrameTPDO;
+	CanFrameBase Phase2CurrentFrameTPDO;
 
 	//TPDO: Phase current no. 3
 	//Receiver: EMC
 	//Sender: Inverter
-	CanDataFrameRxMessage Phase3CurrentFrameTPDO;
+	CanFrameBase Phase3CurrentFrameTPDO;
 
 	//TPDO: Torque (0-3 B) & Rotation Speed (4-7 B)
 	//Receiver: EMC
 	//Sender: Inverter
-	CanDataFrameRxMessage RotationSpeedTPDO;
+	CanFrameBase RotationSpeedTPDO;
 
 	//TPDO: DC bus voltage
 	//Receiver: EMC
 	//Sender: Inverter
-	CanDataFrameRxMessage DCBusVoltage;
+	CanFrameBase DCBusVoltage;
 
 	//TPDO: Consumed power in kW (bytes 0-3) & Vehicle speed (bytes 4-7)
 	//Receiver: EMC
 	//Sender: Inverter
-	CanDataFrameRxMessage ConsumedPowerInkW;
+	CanFrameBase ConsumedPowerInkW;
 } Inverter;
 
-typedef struct
+typedef struct MPPT
 {
-	//Individual ID of node
-	UNSIGNED8 node_id;
+	//Data storage
+	UNSIGNED8 Data[8];
 
 	/*Receiving Messages from ECM perspective*/
 
 	//RSDO Upload: prąd i napięcie wejściowe
 	//Receiver: ECM
 	//Sender: MPPT
-	CanDataFrameRxMessage ReceivedCurrentAndVoltage1SDO;
+	CanFrameBase ReceivedCurrentAndVoltage1SDO;
 
 	//RSDO Upload: prąd i napięcie wyjściowe
 	//Receiver: ECM
 	//Sender: MPPT
-	CanDataFrameRxMessage ReceivedCurrentAndVoltage2SDO;
+	CanFrameBase ReceivedCurrentAndVoltage2SDO;
 
 	//RSDO Upload: tryb pracy
 	//Receiver: ECM
 	//Sender: MPPT
-	CanDataFrameRxMessage ReceivedOperationalStateSDO;
+	CanFrameBase ReceivedOperationalStateSDO;
 
 
 	/*Sending messages from ECM perspective*/
@@ -283,40 +275,32 @@ typedef struct
 	//RSDO Upload: prąd i napięcie wejściowe
 	//Receiver: MPPT
 	//Sender: ECM
-	CanDataFrameTxMessage SentCurrentAndVoltage1SDO;
+	CanFrameBase SentCurrentAndVoltage1SDO;
 
 	//RSDO Upload: prąd i napięcie wyjściowe
 	//Receiver: MPPT
 	//Sender: ECM
-	CanDataFrameTxMessage SentCurrentAndVoltage2SDO;
+	CanFrameBase SentCurrentAndVoltage2SDO;
 
 	//RSDO Upload: tryb pracy
 	//Receiver: MPPT
 	//Sender: ECM
-	CanDataFrameTxMessage SentOperationalStateSDO;
+	CanFrameBase SentOperationalStateSDO;
 } MPPT;
 
 typedef struct LightsController
 {
-	//Individual ID of node
-	UNSIGNED8 node_id;
+	//Data storage
+	UNSIGNED8 Data[8];
 
 	//TSDO Upload: Lights (0x01 - postojowe; 0x02 - dzienne; 0x03 - długie; 0x04 - przeciwmgielne; 0x05 - kierunkowskaz lewy; 0x06 - kierunkowskaz prawy; 0x07 - awaryjne) Other (0x01 - pasy bezpieczeństwa; 0x02 - otwarte drzwi; 0x03) EMCY (Contains device ID and error code)
-	CanDataFrameTxMessage LightsData;
+	CanFrameBase LightsData;
 } LightsController;
 
-//Uses All of the variables to create CanDataFrameTxMessage
-CanDataFrameTxMessage MakeCanDataFrameTxMessage
-						(UNSIGNED8, UNSIGNED8,  UNSIGNED8,  UNSIGNED8,
-						UNSIGNED8,  UNSIGNED8,  UNSIGNED8,  UNSIGNED8,
-						UNSIGNED32,
-						UNSIGNED32);
 
-//Uses All of the variables to create CanDataFrameRxMessage
-CanDataFrameRxMessage MakeCanDataFrameRxMessage(UNSIGNED8,
-								UNSIGNED8,  UNSIGNED8,  UNSIGNED8, UNSIGNED8,
-								UNSIGNED8,  UNSIGNED8,  UNSIGNED8,
-								UNSIGNED32, UNSIGNED32, UNSIGNED32);
+CanFrameBase CanDataFrameBase(UNSIGNED32 _ID, UNSIGNED32 _DLC);
+
+CanFrameBase CanDataFrameBaseWithData(UNSIGNED32 _ID, UNSIGNED32 _DLC, UNSIGNED8 AddData);
 
 /*******************************************************************************
  OBJECT DICTIONARY

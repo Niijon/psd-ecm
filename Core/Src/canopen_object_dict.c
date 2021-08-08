@@ -9,47 +9,63 @@
 #include <canopen_object_dict.h>
 
 //While making SDO frame 0 byte must be SDO_Receive_Byte0, when receiving data and SDO_Send_Byte0 when sending data
-CanDataFrameRxMessage MakeCanDataFrameRxMessage
-		(UNSIGNED8 byte0, UNSIGNED8 byte1,  UNSIGNED8 byte2,  UNSIGNED8 byte3, UNSIGNED8 byte4,
-		UNSIGNED8 byte5,  UNSIGNED8 byte6,  UNSIGNED8 byte7, UNSIGNED32 DLC,UNSIGNED32 StdId,
-		UNSIGNED32 FilterIndex){
-	CanDataFrameRxMessage CDFR;
-	CDFR.data[0] = byte0;
-	CDFR.data[1] = byte1;
-	CDFR.data[2] = byte2;
-	CDFR.data[3] = byte3;
-	CDFR.data[4] = byte4;
-	CDFR.data[5] = byte5;
-	CDFR.data[6] = byte6;
-	CDFR.data[7] = byte7;
-	CDFR.rx_header.DLC = DLC;
-	CDFR.rx_header.IDE = 0x00000000U;
-	CDFR.rx_header.RTR = 0x00000000U;
-	CDFR.rx_header.StdId = StdId;
-	CDFR.rx_header.FilterMatchIndex = FilterIndex;
-	CDFR.rx_header.Timestamp = DISABLE;
-	return CDFR;
+//CanDataFrameRxMessage MakeCanDataFrameRxMessage
+//		(UNSIGNED8 byte0, UNSIGNED8 byte1,  UNSIGNED8 byte2,  UNSIGNED8 byte3, UNSIGNED8 byte4,
+//		UNSIGNED8 byte5,  UNSIGNED8 byte6,  UNSIGNED8 byte7, UNSIGNED32 DLC,UNSIGNED32 StdId){
+//	CanDataFrameRxMessage CDFR;
+//	CDFR.data[0] = byte0;
+//	CDFR.data[1] = byte1;
+//	CDFR.data[2] = byte2;
+//	CDFR.data[3] = byte3;
+//	CDFR.data[4] = byte4;
+//	CDFR.data[5] = byte5;
+//	CDFR.data[6] = byte6;
+//	CDFR.data[7] = byte7;
+//	CDFR.rx_header.DLC = DLC;
+//	CDFR.rx_header.IDE = 0x00000000U;
+//	CDFR.rx_header.RTR = 0x00000000U;
+//	CDFR.rx_header.StdId = StdId;
+//	CDFR.rx_header.Timestamp = DISABLE;
+//	return CDFR;
+//}
+
+//CanDataFrameTxMessage MakeCanDataFrameTxMessage
+//						(UNSIGNED8 byte0, UNSIGNED8 byte1,  UNSIGNED8 byte2,  UNSIGNED8 byte3,
+//						UNSIGNED8 byte4,  UNSIGNED8 byte5,  UNSIGNED8 byte6,  UNSIGNED8 byte7,
+//						UNSIGNED32 DLC, UNSIGNED32 StdId){
+//	CanDataFrameTxMessage CDFT;
+//	CDFT.data[0] = byte0;
+//	CDFT.data[1] = byte1;
+//	CDFT.data[2] = byte2;
+//	CDFT.data[3] = byte3;
+//	CDFT.data[4] = byte4;
+//	CDFT.data[5] = byte5;
+//	CDFT.data[6] = byte6;
+//	CDFT.data[7] = byte7;
+//	CDFT.tx_header.DLC = DLC;
+//	CDFT.tx_header.IDE = 0x00000000U;
+//	CDFT.tx_header.RTR = 0x00000000U;
+//	CDFT.tx_header.StdId = StdId;
+//	CDFT.tx_header.TransmitGlobalTime = DISABLE;
+//	return CDFT;
+//}
+
+CanFrameBase CanDataFrameBase(UNSIGNED32 _ID, UNSIGNED32 _DLC)
+{
+	CanFrameBase CFB;
+	CFB.ID = _ID;
+	CFB.DLC = _DLC;
+	CFB.AdditionalData = 0;
+	return CFB;
 }
 
-CanDataFrameTxMessage MakeCanDataFrameTxMessage
-						(UNSIGNED8 byte0, UNSIGNED8 byte1,  UNSIGNED8 byte2,  UNSIGNED8 byte3,
-						UNSIGNED8 byte4,  UNSIGNED8 byte5,  UNSIGNED8 byte6,  UNSIGNED8 byte7,
-						UNSIGNED32 DLC, UNSIGNED32 StdId){
-	CanDataFrameTxMessage CDFT;
-	CDFT.data[0] = byte0;
-	CDFT.data[1] = byte1;
-	CDFT.data[2] = byte2;
-	CDFT.data[3] = byte3;
-	CDFT.data[4] = byte4;
-	CDFT.data[5] = byte5;
-	CDFT.data[6] = byte6;
-	CDFT.data[7] = byte7;
-	CDFT.tx_header.DLC = DLC;
-	CDFT.tx_header.IDE = 0x00000000U;
-	CDFT.tx_header.RTR = 0x00000000U;
-	CDFT.tx_header.StdId = StdId;
-	CDFT.tx_header.TransmitGlobalTime = DISABLE;
-	return CDFT;
+CanFrameBase CanDataFrameBaseWithData(UNSIGNED32 _ID, UNSIGNED32 _DLC, UNSIGNED8 AddData)
+{
+	CanFrameBase CFB;
+	CFB.ID = _ID;
+	CFB.DLC = _DLC;
+	CFB.AdditionalData = AddData;
+	return CFB;
 }
 
 void CanopenObjectDictInit()
@@ -109,7 +125,28 @@ void CanopenObjectDictInit()
 
 void CanOpenObjectsInit()
 {
-//	_BMS.BatteryVoltageFrame1_4PDO = MakeCanDataFrameRxMessage(0x185, 1, 1, 0, 0, 0, 0, 0, 0, 8, 0x185, FilterIndex);
+	_BMS.Data[0] = 0xFF;
+	_BMS.Data[1] = 0xFF;
+	_BMS.Data[2] = 0xFF;
+	_BMS.Data[3] = 0xFF;
+	_BMS.Data[4] = 0xFF;
+	_BMS.Data[5] = 0xFF;
+	_BMS.Data[6] = 0xFF;
+	_BMS.Data[7] = 0xFF;
+	_BMS.BatteryVoltageFrame1_4PDO = CanDataFrameBase(0x185, 8);
+	_BMS.BatteryVoltageFrame5_8PDO = CanDataFrameBase(0x186, 8);
+	_BMS.BatteryVoltageFrame9_12PDO = CanDataFrameBase(0x187, 8);
+	_BMS.BatteryVoltageFrame13_16PDO = CanDataFrameBase(0x188, 8);
+	_BMS.BatteryVoltageFrame17_20PDO = CanDataFrameBase(0x189, 8);
+	_BMS.BatteryVoltageFrame21_24PDO = CanDataFrameBase(0x18A, 8);
+	_BMS.BatteryVoltageFrame25_28PDO = CanDataFrameBase(0x18B, 8);
+	_BMS.BatteryVoltageFrame29PDO = CanDataFrameBase(0x18C, 5);
+	_BMS.BatteryTemperatur1_4PDO = CanDataFrameBase(0X18D, 8);
+	_BMS.BatteryTemperatur5_8PDO = CanDataFrameBase(0X18E, 8);
+	_BMS.BatteryTemperatur9_12PDO = CanDataFrameBase(0X18F, 8);
+	_BMS.OutputPowerInkW = CanDataFrameBase(0x190, 7);
+
+
 
 	//_LightsController.LightsData = MakeCanDataFrameTxMessage(0x581, SDO_Download, 0xFF, 0xFF, 0X1, byte4, byte5, byte6, byte7, DLC, StdId)
 }

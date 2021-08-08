@@ -350,10 +350,25 @@ void CanSendNmt(CAN_HandleTypeDef chosen_network, uint8_t state,
  * @param *can_frame_template: pointer to a structure containing basic frame parameters
  *
  **/
-void CanSendPdo(CAN_HandleTypeDef chosen_network, CanDataFrameTxMessage *CanFrame) {
-
+void CanSendPdo(CAN_HandleTypeDef chosen_network, uint8_t frame_sdo_id,
+		CanDataFrameInit *ptr_can_frame_template, uint8_t number_of_bytes,
+		uint8_t command_byte, uint8_t byte0, uint8_t byte1, uint8_t byte2,
+		uint8_t byte3, uint8_t byte4, uint8_t byte5, uint8_t byte6) {
+	ptr_can_frame_template->tx_header.StdId = frame_sdo_id;
+	ptr_can_frame_template->tx_header.RTR = CAN_RTR_DATA;
+	ptr_can_frame_template->tx_header.IDE = CAN_ID_STD;
+	ptr_can_frame_template->tx_header.DLC = number_of_bytes;
+	ptr_can_frame_template->tx_header.TransmitGlobalTime = DISABLE;
+	ptr_can_frame_template->tx_data[0] = command_byte;
+	ptr_can_frame_template->tx_data[1] = byte0;
+	ptr_can_frame_template->tx_data[2] = byte1;
+	ptr_can_frame_template->tx_data[3] = byte2;
+	ptr_can_frame_template->tx_data[4] = byte3;
+	ptr_can_frame_template->tx_data[5] = byte4;
+	ptr_can_frame_template->tx_data[6] = byte5;
+	ptr_can_frame_template->tx_data[7] = byte6;
 	if (HAL_CAN_AddTxMessage(&chosen_network,
-			&CanFrame->tx_header, CanFrame->data,
+			&ptr_can_frame_template->tx_header, ptr_can_frame_template->tx_data,
 			&can_tx_mailbox) != HAL_OK) {
 		Error_Handler();
 	}
