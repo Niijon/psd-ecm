@@ -10,11 +10,10 @@
 
 //While making SDO frame 0 byte must be SDO_Receive_Byte0, when receiving data and SDO_Send_Byte0 when sending data
 CanDataFrameRxMessage MakeCanDataFrameRxMessage
-		(UNSIGNED16 id, UNSIGNED8 byte0, UNSIGNED8 byte1,  UNSIGNED8 byte2,  UNSIGNED8 byte3, UNSIGNED8 byte4,
+		(UNSIGNED8 byte0, UNSIGNED8 byte1,  UNSIGNED8 byte2,  UNSIGNED8 byte3, UNSIGNED8 byte4,
 		UNSIGNED8 byte5,  UNSIGNED8 byte6,  UNSIGNED8 byte7, UNSIGNED32 DLC,UNSIGNED32 StdId,
 		UNSIGNED32 FilterIndex){
 	CanDataFrameRxMessage CDFR;
-	CDFR.ID = id;
 	CDFR.data[0] = byte0;
 	CDFR.data[1] = byte1;
 	CDFR.data[2] = byte2;
@@ -33,11 +32,10 @@ CanDataFrameRxMessage MakeCanDataFrameRxMessage
 }
 
 CanDataFrameTxMessage MakeCanDataFrameTxMessage
-						(UNSIGNED16 id,UNSIGNED8 byte0, UNSIGNED8 byte1,  UNSIGNED8 byte2,  UNSIGNED8 byte3,
+						(UNSIGNED8 byte0, UNSIGNED8 byte1,  UNSIGNED8 byte2,  UNSIGNED8 byte3,
 						UNSIGNED8 byte4,  UNSIGNED8 byte5,  UNSIGNED8 byte6,  UNSIGNED8 byte7,
 						UNSIGNED32 DLC, UNSIGNED32 StdId){
 	CanDataFrameTxMessage CDFT;
-	CDFT.ID = id;
 	CDFT.data[0] = byte0;
 	CDFT.data[1] = byte1;
 	CDFT.data[2] = byte2;
@@ -54,7 +52,8 @@ CanDataFrameTxMessage MakeCanDataFrameTxMessage
 	return CDFT;
 }
 
-void CanopenObjectDictInit() {
+void CanopenObjectDictInit()
+{
 //	dashboard.node_id = 0x70;
 //	dashboard.sdo_download_id = 0x581;		// Channel with ecm
 //	dashboard.emcy_id = 0xF0;
@@ -110,9 +109,7 @@ void CanopenObjectDictInit() {
 
 void CanOpenObjectsInit()
 {
-	_Dashboard.node_id = 0x70;
-	_Dashboard.BMSInformationFramePDO = MakeCanDataFrameTxMessage(0X190, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 7, 0X190);
-
+//	_BMS.BatteryVoltageFrame1_4PDO = MakeCanDataFrameRxMessage(0x185, 1, 1, 0, 0, 0, 0, 0, 0, 8, 0x185, FilterIndex);
 
 	//_LightsController.LightsData = MakeCanDataFrameTxMessage(0x581, SDO_Download, 0xFF, 0xFF, 0X1, byte4, byte5, byte6, byte7, DLC, StdId)
 }

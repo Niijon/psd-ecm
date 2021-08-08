@@ -13,7 +13,7 @@
 
 #include "stm32f4xx_hal.h"
 #include "main.h"
-#include "gpio.h"
+//#include "gpio.h"
 
 /*******************************************************************************
  CANopen DATA DYPES
@@ -60,11 +60,16 @@ typedef domain_t DOMAIN;
 #define SDO_Receive_Byte0			0b00101111 //Using SDO protocol results in using this value as its first value when receiving data
 #define SDO_Send_Byte0				0b0100 //Using SDO protocol results in using this value as its first value when sending data
 
-typedef struct CanDataFrameTxMessage
-{
-	//ID of CAN message
-	UNSIGNED16 ID;
 
+//typedef struct {
+//	uint8_t tx_data[8];
+//	CAN_TxHeaderTypeDef tx_header;
+//	CAN_RxHeaderTypeDef rx_header;
+//	uint8_t rx_data[8];
+//} CanDataFrameInit;
+
+typedef struct
+{
 	//Data storage for message
 	uint8_t data[8];
 
@@ -72,11 +77,8 @@ typedef struct CanDataFrameTxMessage
 	CAN_TxHeaderTypeDef tx_header;
 } CanDataFrameTxMessage;
 
-typedef struct CanDataFrameRxMessage
+typedef struct
 {
-	//ID of CAN message
-	UNSIGNED16 ID;
-
 	//variable to store data that is going to be received in CAN message(HAL integration)
 	CAN_RxHeaderTypeDef rx_header;
 
@@ -84,7 +86,7 @@ typedef struct CanDataFrameRxMessage
 	uint8_t data[8];
 } CanDataFrameRxMessage;
 
-typedef struct CanopenNode
+typedef struct
 {
 	//Individual ID of node
 	UNSIGNED8 node_id;
@@ -111,7 +113,7 @@ typedef struct CanopenNode
 	UNSIGNED8 emcy_id;
 } CanopenNode;
 
-typedef struct Dashboard
+typedef struct
 {
 	//Individual ID of a node
 	UNSIGNED8 node_id;
@@ -139,7 +141,7 @@ typedef struct Dashboard
 	CanDataFrameTxMessage Inverter2ConsumedPowerPDO;
 } Dashboard;
 
-typedef struct BMS
+typedef struct
 {
 	/*Receiving Messages from ECM perspective*/
 	//EMCY: DATA0 contains error information from 0x0 - 0x5. 0 - over voltage; 1 - undervoltage; 2 - over current; 3 - over temperature; 4 - under temperature; 5 - MPPTs powered off info
@@ -207,7 +209,7 @@ typedef struct BMS
 	CanDataFrameRxMessage OutputPowerInkW;
 } BMS;
 
-typedef struct Inverter
+typedef struct
 {
 	//Individual ID of a node
 	UNSIGNED8 node_id;
@@ -253,7 +255,7 @@ typedef struct Inverter
 	CanDataFrameRxMessage ConsumedPowerInkW;
 } Inverter;
 
-typedef struct MPPT
+typedef struct
 {
 	//Individual ID of node
 	UNSIGNED8 node_id;
@@ -305,13 +307,13 @@ typedef struct LightsController
 
 //Uses All of the variables to create CanDataFrameTxMessage
 CanDataFrameTxMessage MakeCanDataFrameTxMessage
-						(UNSIGNED16, UNSIGNED8, UNSIGNED8,  UNSIGNED8,  UNSIGNED8,
+						(UNSIGNED8, UNSIGNED8,  UNSIGNED8,  UNSIGNED8,
 						UNSIGNED8,  UNSIGNED8,  UNSIGNED8,  UNSIGNED8,
 						UNSIGNED32,
 						UNSIGNED32);
 
 //Uses All of the variables to create CanDataFrameRxMessage
-CanDataFrameRxMessage MakeCanDataFrameRxMessage(UNSIGNED16, UNSIGNED8,
+CanDataFrameRxMessage MakeCanDataFrameRxMessage(UNSIGNED8,
 								UNSIGNED8,  UNSIGNED8,  UNSIGNED8, UNSIGNED8,
 								UNSIGNED8,  UNSIGNED8,  UNSIGNED8,
 								UNSIGNED32, UNSIGNED32, UNSIGNED32);

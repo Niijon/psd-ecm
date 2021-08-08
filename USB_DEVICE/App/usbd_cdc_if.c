@@ -21,6 +21,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if.h"
+#include "gpio.h"
 
 /* USER CODE BEGIN INCLUDE */
 /* USER CODE END INCLUDE */

@@ -38,8 +38,8 @@
 /************************************************************************************************
  PRIVATE INCLUDES
  ************************************************************************************************/
-#include "canopen_object_dict.h"
-#include "usbd_cdc_if.h"
+//#include "canopen_object_dict.h"
+//#include "usbd_cdc_if.h"
 
 /* USER CODE END Includes */
 
@@ -49,6 +49,8 @@
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
+#define CAN_HIGH_SPEED hcan1
+#define CAN_LOW_SPEED hcan2
 /* USER CODE BEGIN PD */
 /* USER CODE END PD */
 
@@ -168,11 +170,11 @@ int main(void)
 //		CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
 //					&can_frame_template);
 		//actual data upload.
-		HAL_Delay(100);
-		CanSendSdo(CAN_HIGH_SPEED, 90, &can_frame_template , 7, 1, 2, 3, 4, 5, 6, 7, 8);
-
 //		HAL_Delay(100);
-//		CanSendSdo(CAN_LOW_SPEED, 15, &can_frame_template , 7, 8, 7, 6, 5, 4, 3, 2, 1);
+//		CanSendPdo(CAN_HIGH_SPEED, &_Dashboard.BMSInformationFramePDO);
+
+		HAL_Delay(100);
+		CanSendSdo(hcan2, 15, &can_frame_template , 7, 8, 7, 6, 5, 4, 3, 2, 1);
 
 //
 ////

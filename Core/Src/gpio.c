@@ -20,7 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
 /* USER CODE BEGIN 0 */
-#include "canopen_object_dict.h"
+//#include "canopen_object_dict.h"
 #include "can.h"
 
 /* USER CODE END 0 */

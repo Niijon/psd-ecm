@@ -11,16 +11,15 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /************************************************************************************************
  INCLUDES
  ************************************************************************************************/
+//#include "canopen_object_dict.h"
 #include "can.h"
-#include "canopen_object_dict.h"
-#include "usbd_cdc_if.h"
+//#include "usbd_cdc_if.h"
 
 /* USER CODE END Includes */
 
@@ -55,6 +54,7 @@
 	bool_t emcy_state;
 	bool_t reverse_state;
 	bool_t daylight_state;
+	CanDataFrameInit can_frame_template;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -306,7 +306,7 @@ void CAN1_RX0_IRQHandler(void) {
 	/************************************************************************************************
 	 CAN_HIGH_SPEED RX INTERRUPT HANDLING
 	 ************************************************************************************************/
-	CanSaveReceivedData(CAN_HIGH_SPEED, &can_rx_frame_template);
+	CanSaveReceivedData(hcan1, &can_rx_frame_template);
 //	CanTransfer(CAN_LOW_SPEED, lights_controller.node_id, dashboard.node_id);
 	UsbTransfer(&can_rx_frame_template);
 
@@ -357,13 +357,13 @@ void EXTI9_5_IRQHandler(void) {
 	/* opto input 5 - only front lights, those only on a day */
 	if (HAL_GPIO_ReadPin(OPTO_INPUT5_GPIO_Port, OPTO_INPUT5_Pin)
 			== GPIO_PIN_SET) {
-		CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id,
-				&can_frame_template, 3, SDO_UPLOAD, 0x08, 1, 0, 0, 0, 0, 0);
+		CanSendSdo(hcan2, lights_controller.node_id,
+				&can_frame_template, 3, SDO_Send_Byte0, 0x08, 1, 0, 0, 0, 0, 0);
 
 	} else if (HAL_GPIO_ReadPin(OPTO_INPUT5_GPIO_Port, OPTO_INPUT5_Pin)
 			== GPIO_PIN_RESET) {
-		CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id,
-				&can_frame_template, 3, SDO_UPLOAD, 0x08, 0, 0, 0, 0, 0, 0);
+		CanSendSdo(hcan2, lights_controller.node_id,
+				&can_frame_template, 3, SDO_Send_Byte0, 0x08, 0, 0, 0, 0, 0, 0);
 	}
 //	} else {
 //		CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id
@@ -373,8 +373,8 @@ void EXTI9_5_IRQHandler(void) {
 	/* opto input 6 - emergency lights */
 	if (HAL_GPIO_ReadPin(OPTO_INPUT6_GPIO_Port, OPTO_INPUT6_Pin)
 			== GPIO_PIN_SET) {
-		CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id,
-				&can_frame_template, 3, SDO_UPLOAD, 0x06, 1, 0, 0, 0, 0, 0);
+		CanSendSdo(hcan2, lights_controller.node_id,
+				&can_frame_template, 3, SDO_Send_Byte0, 0x06, 1, 0, 0, 0, 0, 0);
 //				&can_frame_template, 5, SDO_UPLOAD, 0x06, 0, 0x06, 1, 0, 0, 0);
 
 //	} else if (HAL_GPIO_ReadPin(OPTO_INPUT6_GPIO_Port, OPTO_INPUT6_Pin)
@@ -382,8 +382,8 @@ void EXTI9_5_IRQHandler(void) {
 //		CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id,
 //				&can_frame_template, 3, SDO_UPLOAD, 0x06, 0, 0, 0, 0, 0, 0);
 	} else {
-		CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id,
-				&can_frame_template, 3, SDO_UPLOAD, 0x06, 0, 0, 0, 0, 0, 0);
+		CanSendSdo(hcan2, lights_controller.node_id,
+				&can_frame_template, 3, SDO_Send_Byte0, 0x06, 0, 0, 0, 0, 0, 0);
 //				&can_frame_template, 3, SDO_UPLOAD, 0x06, 0, 0x06, 1, 0, 0, 0);
 	}
 

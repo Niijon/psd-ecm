@@ -24,7 +24,9 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
+//#include "main.h"
+#include "canopen_object_dict.h"
+
 
 /* USER CODE BEGIN Includes */
 
@@ -38,17 +40,17 @@ extern CAN_HandleTypeDef hcan2;
 /*******************************************************************************
  DEFINES
  *******************************************************************************/
-#define CAN_HIGH_SPEED hcan1
-#define CAN_LOW_SPEED hcan2
-
-#define OPERATIONAL_STATE		0x01
-#define STOPPED_STATE			0x02
-#define PRE_OPERATIONAL_STATE	0x80
-#define RESET_APPLICATION		0x81
-#define RESET_COMMUNICATION		0x82
-
-#define SDO_UPLOAD   0b00100000
-#define SDO_DOWNLOAD 0b01000000
+//#define CAN_HIGH_SPEED hcan1
+//#define CAN_LOW_SPEED hcan2
+//
+//#define OPERATIONAL_STATE		0x01
+//#define STOPPED_STATE			0x02
+//#define PRE_OPERATIONAL_STATE	0x80
+//#define RESET_APPLICATION		0x81
+//#define RESET_COMMUNICATION		0x82
+//
+//#define SDO_UPLOAD   0b00100000
+//#define SDO_DOWNLOAD 0b01000000
 
 /*******************************************************************************
  DECLARATIONS
@@ -59,6 +61,26 @@ typedef struct {
 	CAN_RxHeaderTypeDef rx_header;
 	uint8_t rx_data[8];
 } CanDataFrameInit;
+
+//typedef struct
+//{
+//	//Data storage for message
+//	uint8_t data[8];
+//
+//	//variable to store data that is going to be sent in CAN message(HAL integration)
+//	CAN_TxHeaderTypeDef tx_header;
+//} CanDataFrameTxMessage;
+//
+//typedef struct
+//{
+//	//variable to store data that is going to be received in CAN message(HAL integration)
+//	CAN_RxHeaderTypeDef rx_header;
+//
+//	//Data storage for message
+//	uint8_t data[8];
+//}CanDataFrameRxMessage;
+
+
 
 extern CanDataFrameInit can_frame_template;
 extern CanDataFrameInit can_rx_frame_template;
@@ -82,10 +104,7 @@ void CanClearRxDataFrame(CanDataFrameInit *ptr_can_frame_template);
 void CanSendSync(CAN_HandleTypeDef hcanx, CanDataFrameInit *can_frame_template);
 void CanSendNmt(CAN_HandleTypeDef hcanx, uint8_t state, uint8_t node_id,
 		CanDataFrameInit *can_frame_template);
-void CanSendPdo(CAN_HandleTypeDef chosen_network, uint8_t frame_pdo_id,
-		uint8_t number_of_bytes, CanDataFrameInit *can_frame_template,
-		uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
-		uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7);
+void CanSendPdo(CAN_HandleTypeDef, CanDataFrameTxMessage*);
 void CanSendSdo(CAN_HandleTypeDef chosen_network, uint8_t frame_sdo_id,
 		CanDataFrameInit *ptr_can_frame_template, uint8_t number_of_bytes,
 		uint8_t command_byte, uint8_t byte0, uint8_t byte1, uint8_t byte2,

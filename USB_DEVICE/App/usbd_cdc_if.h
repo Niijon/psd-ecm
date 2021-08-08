@@ -30,8 +30,15 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc.h"
 
+ typedef struct {
+ 	uint8_t tx_data[8];
+ 	CAN_TxHeaderTypeDef tx_header;
+ 	CAN_RxHeaderTypeDef rx_header;
+ 	uint8_t rx_data[8];
+ } CanDataFrameInit;
+
 /* USER CODE BEGIN INCLUDE */
-#include "can.h"
+//#include "can.h"
 /* USER CODE END INCLUDE */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY

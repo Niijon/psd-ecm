@@ -20,8 +20,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
 /* USER CODE BEGIN 0 */
-#include "usbd_cdc_if.h"
-#include "canopen_object_dict.h"
+//#include "usbd_cdc_if.h"
+
 
 /************************************************************************************************
  GLOBAL VARIABLES
@@ -67,9 +67,8 @@ void MX_CAN1_Init(void)
 /* CAN2 init function */
 void MX_CAN2_Init(void)
 {
-
   hcan2.Instance = CAN2;
-  hcan2.Init.Prescaler = 50;
+  hcan2.Init.Prescaler = 10; //Officially 50
   hcan2.Init.Mode = CAN_MODE_NORMAL;
   hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
   hcan2.Init.TimeSeg1 = CAN_BS1_13TQ;
@@ -351,26 +350,10 @@ void CanSendNmt(CAN_HandleTypeDef chosen_network, uint8_t state,
  * @param *can_frame_template: pointer to a structure containing basic frame parameters
  *
  **/
-void CanSendPdo(CAN_HandleTypeDef chosen_network, uint8_t frame_pdo_id,
-		uint8_t number_of_bytes, CanDataFrameInit *ptr_can_frame_template,
-		uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
-		uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7) {
-	ptr_can_frame_template->tx_header.StdId = frame_pdo_id;
-	ptr_can_frame_template->tx_header.RTR = CAN_RTR_DATA;
-	ptr_can_frame_template->tx_header.IDE = CAN_ID_STD;
-	ptr_can_frame_template->tx_header.DLC = number_of_bytes;
-	ptr_can_frame_template->tx_header.TransmitGlobalTime = DISABLE;
-	ptr_can_frame_template->tx_data[0] = byte0;
-	ptr_can_frame_template->tx_data[1] = byte1;
-	ptr_can_frame_template->tx_data[2] = byte2;
-	ptr_can_frame_template->tx_data[3] = byte3;
-	ptr_can_frame_template->tx_data[4] = byte4;
-	ptr_can_frame_template->tx_data[5] = byte5;
-	ptr_can_frame_template->tx_data[6] = byte6;
-	ptr_can_frame_template->tx_data[7] = byte7;
+void CanSendPdo(CAN_HandleTypeDef chosen_network, CanDataFrameTxMessage *CanFrame) {
 
 	if (HAL_CAN_AddTxMessage(&chosen_network,
-			&ptr_can_frame_template->tx_header, ptr_can_frame_template->tx_data,
+			&CanFrame->tx_header, CanFrame->data,
 			&can_tx_mailbox) != HAL_OK) {
 		Error_Handler();
 	}
@@ -378,8 +361,7 @@ void CanSendPdo(CAN_HandleTypeDef chosen_network, uint8_t frame_pdo_id,
 	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
 	}
 
-	CanClearTxDataFrame(ptr_can_frame_template);
-
+	//CanClearTxDataFrame();
 }
 
 /**
@@ -417,8 +399,7 @@ void CanSendSdo(CAN_HandleTypeDef chosen_network, uint8_t frame_sdo_id,
 
 	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
 	}
-
-	CanClearTxDataFrame(ptr_can_frame_template);
+	//CanClearTxDataFrame(ptr_can_frame_template);
 
 }
 
