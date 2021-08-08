@@ -168,11 +168,11 @@ int main(void)
 //		CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
 //					&can_frame_template);
 		//actual data upload.
-//		HAL_Delay(100);
-//		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 7, 1, 2, 3, 4, 5, 6, 7, 8);
-
 		HAL_Delay(100);
-		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_download_id, &can_frame_template , 7, 8, 7, 6, 5, 4, 3, 2, 1);
+		CanSendSdo(CAN_HIGH_SPEED, 90, &can_frame_template , 7, 1, 2, 3, 4, 5, 6, 7, 8);
+
+//		HAL_Delay(100);
+//		CanSendSdo(CAN_LOW_SPEED, 15, &can_frame_template , 7, 8, 7, 6, 5, 4, 3, 2, 1);
 
 //
 ////

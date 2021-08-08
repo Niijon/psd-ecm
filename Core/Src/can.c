@@ -46,7 +46,6 @@ CAN_HandleTypeDef hcan2;
 /* CAN1 init function */
 void MX_CAN1_Init(void)
 {
-
   hcan1.Instance = CAN1;
   hcan1.Init.Prescaler = 10;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
@@ -85,7 +84,6 @@ void MX_CAN2_Init(void)
   {
     Error_Handler();
   }
-
 }
 
 static uint32_t HAL_RCC_CAN1_CLK_ENABLED=0;
