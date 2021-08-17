@@ -153,6 +153,7 @@ int main(void)
 //	HAL_Delay(100);
 //	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
 //			&can_frame_template);
+
 //	HAL_Delay(100);
 //	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
 //			&can_frame_template);

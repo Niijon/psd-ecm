@@ -338,6 +338,7 @@ static int8_t CDC_TransmitCplt_HS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
  * @param ptr_can_frame_template
  *
  **/
+
 void UsbTransfer(CanDataFrameInit *ptr_can_frame_template) {
 //	uint8_t buffer_size = ptr_can_frame_template->rx_header.DLC * 2 + 7;
 //	uint8_t usb_tx_data_buffer[buffer_size];

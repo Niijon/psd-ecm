@@ -57,6 +57,7 @@ typedef domain_t DOMAIN;
 #define CO_NO_TPDO                  0   //Associated objects:
 #define CO_NO_NMT_MASTER            0
 #define CO_NO_TRACE                 0
+#define SYNC                 		100 //SYNC value in miliseconds
 #define SDO_Receive_Byte0			0b00101111 //Using SDO protocol results in using this value as its first value when receiving data
 #define SDO_Send_Byte0				0b0100 //Using SDO protocol results in using this value as its first value when sending data
 
@@ -105,9 +106,6 @@ typedef struct
 
 typedef struct Dashboard
 {
-	//Data storage
-	UNSIGNED8 Data[8];
-
 	/*Sending messages from ECM perspective*/
 
 	//TSDO Upload: Lights (0x01 - postojowe; 0x02 - dzienne; 0x03 - długie; 0x04 - przeciwmgielne; 0x05 - kierunkowskaz lewy; 0x06 - kierunkowskaz prawy; 0x07 - awaryjne) Other (0x01 - pasy bezpieczeństwa; 0x02 - otwarte drzwi; 0x03) EMCY (Contains device ID and error code)
@@ -133,8 +131,6 @@ typedef struct Dashboard
 
 typedef struct BMS
 {
-	//Data storage
-	UNSIGNED8 Data[8];
 	/*Receiving Messages from ECM perspective*/
 	//EMCY: DATA0 contains error information from 0x0 - 0x5. 0 - over voltage; 1 - undervoltage; 2 - over current; 3 - over temperature; 4 - under temperature; 5 - MPPTs powered off info
 	//Receiver: EMC
@@ -203,9 +199,6 @@ typedef struct BMS
 
 typedef struct Inverter
 {
-	//Individual ID of a node
-	UNSIGNED8 Data[8];
-
 	/*Receiving Messages from ECM perspective*/
 	//EMCY: DATA0 contains error information.
 	//Sender: Inverter
@@ -249,9 +242,7 @@ typedef struct Inverter
 
 typedef struct MPPT
 {
-	//Data storage
 	UNSIGNED8 Data[8];
-
 	/*Receiving Messages from ECM perspective*/
 
 	//RSDO Upload: prąd i napięcie wejściowe
@@ -275,24 +266,21 @@ typedef struct MPPT
 	//RSDO Upload: prąd i napięcie wejściowe
 	//Receiver: MPPT
 	//Sender: ECM
-	CanFrameBase SentCurrentAndVoltage1SDO;
+	CanFrameBase SendCurrentAndVoltage1SDO;
 
 	//RSDO Upload: prąd i napięcie wyjściowe
 	//Receiver: MPPT
 	//Sender: ECM
-	CanFrameBase SentCurrentAndVoltage2SDO;
+	CanFrameBase SendCurrentAndVoltage2SDO;
 
 	//RSDO Upload: tryb pracy
 	//Receiver: MPPT
 	//Sender: ECM
-	CanFrameBase SentOperationalStateSDO;
+	CanFrameBase SendOperationalStateSDO;
 } MPPT;
 
 typedef struct LightsController
 {
-	//Data storage
-	UNSIGNED8 Data[8];
-
 	//TSDO Upload: Lights (0x01 - postojowe; 0x02 - dzienne; 0x03 - długie; 0x04 - przeciwmgielne; 0x05 - kierunkowskaz lewy; 0x06 - kierunkowskaz prawy; 0x07 - awaryjne) Other (0x01 - pasy bezpieczeństwa; 0x02 - otwarte drzwi; 0x03) EMCY (Contains device ID and error code)
 	CanFrameBase LightsData;
 } LightsController;
@@ -300,23 +288,26 @@ typedef struct LightsController
 
 CanFrameBase CanDataFrameBase(UNSIGNED32 _ID, UNSIGNED32 _DLC);
 
-CanFrameBase CanDataFrameBaseWithData(UNSIGNED32 _ID, UNSIGNED32 _DLC, UNSIGNED8 AddData);
+CanFrameBase CanDataFrameBaseWithAdditionalData(UNSIGNED32 _ID, UNSIGNED32 _DLC, UNSIGNED8 AddData);
+
+void MakeDataFrame(MPPT *MPPT, UNSIGNED8 byte0, UNSIGNED8 byte1, UNSIGNED8 byte2,
+					UNSIGNED8 byte3, UNSIGNED8 byte4, UNSIGNED8 byte5, UNSIGNED8 byte6, UNSIGNED8 byte7);
 
 /*******************************************************************************
  OBJECT DICTIONARY
  *******************************************************************************/
-#define CO_OD_NoOfElements             9
-//CanopenNode dashboard;				// ECM
-//CanopenNode inverter_1;				// ECM
-//CanopenNode inverter_2;				// ECM
-//CanopenNode mppt_1;					// ECM
-//CanopenNode mppt_2;					// ECM
-//CanopenNode mppt_3;					// ECM
-//CanopenNode ecm;
-//CanopenNode bms;	                // MPPTs, Inverters, Dashboard, Lights controller
+//#define CO_OD_NoOfElements             9
+////CanopenNode dashboard;				// ECM
+////CanopenNode inverter_1;				// ECM
+////CanopenNode inverter_2;				// ECM
+////CanopenNode mppt_1;					// ECM
+////CanopenNode mppt_2;					// ECM
+////CanopenNode mppt_3;					// ECM
+////CanopenNode ecm;
+////CanopenNode bms;	                // MPPTs, Inverters, Dashboard, Lights controller
 CanopenNode lights_controller;		// ECM
 //					// ECM
-#define CO_OD_NoOfElements  9
+#define CO_OD_NoOfElements  10
 Dashboard _Dashboard;
 BMS _BMS;
 Inverter _Inverter1;
@@ -325,6 +316,7 @@ MPPT _MPPT1;
 MPPT _MPPT2;
 MPPT _MPPT3;
 LightsController _LightsController;
+UNSIGNED8 DefaultFFCanFrame[8];
 void CanopenObjectDictInit();
 void CanOpenObjectsInit();
 

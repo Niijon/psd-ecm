@@ -59,7 +59,7 @@ CanFrameBase CanDataFrameBase(UNSIGNED32 _ID, UNSIGNED32 _DLC)
 	return CFB;
 }
 
-CanFrameBase CanDataFrameBaseWithData(UNSIGNED32 _ID, UNSIGNED32 _DLC, UNSIGNED8 AddData)
+CanFrameBase CanDataFrameBaseWithAdditionalData(UNSIGNED32 _ID, UNSIGNED32 _DLC, UNSIGNED8 AddData)
 {
 	CanFrameBase CFB;
 	CFB.ID = _ID;
@@ -67,6 +67,20 @@ CanFrameBase CanDataFrameBaseWithData(UNSIGNED32 _ID, UNSIGNED32 _DLC, UNSIGNED8
 	CFB.AdditionalData = AddData;
 	return CFB;
 }
+
+void MakeDataFrame(MPPT *MPPT, UNSIGNED8 byte0, UNSIGNED8 byte1, UNSIGNED8 byte2,
+					UNSIGNED8 byte3, UNSIGNED8 byte4, UNSIGNED8 byte5, UNSIGNED8 byte6, UNSIGNED8 byte7)
+{
+	MPPT->Data[0] = byte0;
+	MPPT->Data[1] = byte1;
+	MPPT->Data[2] = byte2;
+	MPPT->Data[3] = byte3;
+	MPPT->Data[4] = byte4;
+	MPPT->Data[5] = byte5;
+	MPPT->Data[6] = byte6;
+	MPPT->Data[7] = byte7;
+}
+
 
 void CanopenObjectDictInit()
 {
@@ -125,14 +139,15 @@ void CanopenObjectDictInit()
 
 void CanOpenObjectsInit()
 {
-	_BMS.Data[0] = 0xFF;
-	_BMS.Data[1] = 0xFF;
-	_BMS.Data[2] = 0xFF;
-	_BMS.Data[3] = 0xFF;
-	_BMS.Data[4] = 0xFF;
-	_BMS.Data[5] = 0xFF;
-	_BMS.Data[6] = 0xFF;
-	_BMS.Data[7] = 0xFF;
+	DefaultFFCanFrame[0] = 0xFF;
+	DefaultFFCanFrame[1] = 0xFF;
+	DefaultFFCanFrame[2] = 0xFF;
+	DefaultFFCanFrame[3] = 0xFF;
+	DefaultFFCanFrame[4] = 0xFF;
+	DefaultFFCanFrame[5] = 0xFF;
+	DefaultFFCanFrame[6] = 0xFF;
+	DefaultFFCanFrame[7] = 0xFF;
+	/* BMS INIT BEGIN*/
 	_BMS.BatteryVoltageFrame1_4PDO = CanDataFrameBase(0x185, 8);
 	_BMS.BatteryVoltageFrame5_8PDO = CanDataFrameBase(0x186, 8);
 	_BMS.BatteryVoltageFrame9_12PDO = CanDataFrameBase(0x187, 8);
@@ -145,8 +160,87 @@ void CanOpenObjectsInit()
 	_BMS.BatteryTemperatur5_8PDO = CanDataFrameBase(0X18E, 8);
 	_BMS.BatteryTemperatur9_12PDO = CanDataFrameBase(0X18F, 8);
 	_BMS.OutputPowerInkW = CanDataFrameBase(0x190, 7);
+	/* BMS INIT END*/
 
+	/* Inverter1 INIT BEGIN*/
+	_Inverter1.TemperatureFrameTPDO = CanDataFrameBase(0x290,8);
+	_Inverter1.Phase1CurrentFrameTPDO = CanDataFrameBase(0x291,4);
+	_Inverter1.Phase2CurrentFrameTPDO = CanDataFrameBase(0x292,4);
+	_Inverter1.Phase3CurrentFrameTPDO = CanDataFrameBase(0x293,4);
+	_Inverter1.RotationSpeedTPDO = CanDataFrameBase(0x294,8);
+	_Inverter1.DCBusVoltage = CanDataFrameBase(0x295,4);
+	_Inverter1.ConsumedPowerInkW = CanDataFrameBase(0x296,8);
+	/* Inverter1 INIT END*/
 
+	/* Inverter2 INIT BEGIN*/
+	_Inverter2.TemperatureFrameTPDO = CanDataFrameBase(0x395,8);
+	_Inverter2.Phase1CurrentFrameTPDO = CanDataFrameBase(0x396,4);
+	_Inverter2.Phase2CurrentFrameTPDO = CanDataFrameBase(0x397,4);
+	_Inverter2.Phase3CurrentFrameTPDO = CanDataFrameBase(0x398,4);
+	_Inverter2.RotationSpeedTPDO = CanDataFrameBase(0x399,8);
+	_Inverter2.DCBusVoltage = CanDataFrameBase(0x400,4);
+	_Inverter2.ConsumedPowerInkW = CanDataFrameBase(0x401,8);
+	/* Inverter2 INIT END*/
+
+	/* MPPT1 INIT BEGIN*/
+	_MPPT1.ReceivedCurrentAndVoltage1SDO = CanDataFrameBaseWithAdditionalData(0x5B3, 8, 0x01);
+	MakeDataFrame(&_MPPT1, SDO_Receive_Byte0, 0xAA,  0xAA, 0x01, 0, 0, 0, 0);
+
+	_MPPT1.ReceivedCurrentAndVoltage2SDO = CanDataFrameBaseWithAdditionalData(0x5B3, 8, 0x02);
+	MakeDataFrame(&_MPPT1, SDO_Receive_Byte0, 0xAA,  0xAA, 0x02, 0, 0, 0, 0);
+
+	_MPPT1.ReceivedOperationalStateSDO = CanDataFrameBaseWithAdditionalData(0x5B3, 5, 0x03);
+	MakeDataFrame(&_MPPT1, SDO_Receive_Byte0, 0xAA,  0xAA, 0x03, 0, 0, 0, 0);
+
+	_MPPT1.SendCurrentAndVoltage1SDO = CanDataFrameBaseWithAdditionalData(0x633, 4, 0x01);
+	MakeDataFrame(&_MPPT1, SDO_Send_Byte0, 0xAA,  0xAA, 0x01, 0, 0, 0, 0);
+
+	_MPPT1.SendCurrentAndVoltage2SDO = CanDataFrameBaseWithAdditionalData(0x633, 4, 0x02);
+	MakeDataFrame(&_MPPT1, SDO_Send_Byte0, 0xAA,  0xAA, 0x02, 0, 0, 0, 0);
+
+	_MPPT1.SendOperationalStateSDO = CanDataFrameBaseWithAdditionalData(0x633, 4, 0x03);
+	MakeDataFrame(&_MPPT1, SDO_Send_Byte0, 0xAA,  0xAA, 0x03, 0, 0, 0, 0);
+	/* MPPT1 INIT END*/
+
+	/* MPPT2 INIT BEGIN*/
+	_MPPT2.ReceivedCurrentAndVoltage1SDO = CanDataFrameBaseWithAdditionalData(0x5B6, 8, 0x01);
+	MakeDataFrame(&_MPPT2, SDO_Receive_Byte0, 0xAA,  0xAA, 0x01, 0, 0, 0, 0);
+
+	_MPPT2.ReceivedCurrentAndVoltage2SDO = CanDataFrameBaseWithAdditionalData(0x5B6, 8, 0x02);
+	MakeDataFrame(&_MPPT2, SDO_Receive_Byte0, 0xAA,  0xAA, 0x02, 0, 0, 0, 0);
+
+	_MPPT2.ReceivedOperationalStateSDO = CanDataFrameBaseWithAdditionalData(0x5B6, 5, 0x03);
+	MakeDataFrame(&_MPPT2, SDO_Receive_Byte0, 0xAA,  0xAA, 0x03, 0, 0, 0, 0);
+
+	_MPPT2.SendCurrentAndVoltage1SDO = CanDataFrameBaseWithAdditionalData(0x636, 4, 0x01);
+	MakeDataFrame(&_MPPT2, SDO_Send_Byte0, 0xAA,  0xAA, 0x01, 0, 0, 0, 0);
+
+	_MPPT2.SendCurrentAndVoltage2SDO = CanDataFrameBaseWithAdditionalData(0x636, 4, 0x02);
+	MakeDataFrame(&_MPPT2, SDO_Send_Byte0, 0xAA,  0xAA, 0x02, 0, 0, 0, 0);
+
+	_MPPT2.SendOperationalStateSDO = CanDataFrameBaseWithAdditionalData(0x636, 4, 0x03);
+	MakeDataFrame(&_MPPT2, SDO_Send_Byte0, 0xAA,  0xAA, 0x03, 0, 0, 0, 0);
+	/* MPPT2 INIT END*/
+
+	/* MPPT3 INIT BEGIN*/
+	_MPPT3.ReceivedCurrentAndVoltage1SDO = CanDataFrameBaseWithAdditionalData(0x5B9, 8, 0x01);
+	MakeDataFrame(&_MPPT3, SDO_Receive_Byte0, 0xAA,  0xAA, 0x01, 0, 0, 0, 0);
+
+	_MPPT3.ReceivedCurrentAndVoltage2SDO = CanDataFrameBaseWithAdditionalData(0x5B9, 8, 0x02);
+	MakeDataFrame(&_MPPT3, SDO_Receive_Byte0, 0xAA,  0xAA, 0x02, 0, 0, 0, 0);
+
+	_MPPT3.ReceivedOperationalStateSDO = CanDataFrameBaseWithAdditionalData(0x5B9, 5, 0x03);
+	MakeDataFrame(&_MPPT3, SDO_Receive_Byte0, 0xAA,  0xAA, 0x03, 0, 0, 0, 0);
+
+	_MPPT3.SendCurrentAndVoltage1SDO = CanDataFrameBaseWithAdditionalData(0x639, 4, 0x01);
+	MakeDataFrame(&_MPPT3, SDO_Send_Byte0, 0xAA,  0xAA, 0x01, 0, 0, 0, 0);
+
+	_MPPT3.SendCurrentAndVoltage2SDO = CanDataFrameBaseWithAdditionalData(0x639, 4, 0x02);
+	MakeDataFrame(&_MPPT3, SDO_Send_Byte0, 0xAA,  0xAA, 0x02, 0, 0, 0, 0);
+
+	_MPPT3.SendOperationalStateSDO = CanDataFrameBaseWithAdditionalData(0x639, 4, 0x03);
+	MakeDataFrame(&_MPPT3, SDO_Send_Byte0, 0xAA,  0xAA, 0x03, 0, 0, 0, 0);
+	/* MPPT3 INIT END*/
 
 	//_LightsController.LightsData = MakeCanDataFrameTxMessage(0x581, SDO_Download, 0xFF, 0xFF, 0X1, byte4, byte5, byte6, byte7, DLC, StdId)
 }
