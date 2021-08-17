@@ -55,6 +55,10 @@ USBD_HandleTypeDef hUsbDeviceHS;
  * -- Insert your external function declaration here --
  */
 /* USER CODE BEGIN 1 */
+void hUsbDeviceHSInit()
+{
+	hUsbDeviceHS.dev_speed = 115200;
+}
 
 /* USER CODE END 1 */
 
@@ -65,6 +69,7 @@ USBD_HandleTypeDef hUsbDeviceHS;
 void MX_USB_DEVICE_Init(void)
 {
   /* USER CODE BEGIN USB_DEVICE_Init_PreTreatment */
+	hUsbDeviceHSInit();
 
   /* USER CODE END USB_DEVICE_Init_PreTreatment */
 

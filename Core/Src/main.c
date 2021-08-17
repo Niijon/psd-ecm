@@ -173,20 +173,21 @@ int main(void)
 //		HAL_Delay(100);
 //		CanSendPdo(CAN_HIGH_SPEED, &_Dashboard.BMSInformationFramePDO);
 
-		HAL_Delay(100);
-		CanSendSdo(hcan2, 15, &can_frame_template , 7, 8, 7, 6, 5, 4, 3, 2, 1);
+//		HAL_Delay(1000);
+//		CanExtendedFrame(hcan1, 0x1806E5F4, 8 , &can_frame_template , 0x04, 0x7E, 0, 100, 0, 0, 0, 0);
 
-//
-////
+		UsbTransferData(0x10, &can_frame_template.tx_data);
+		HAL_Delay(1000);
+
 ////		PDO transfer testing
-//
+
 //		HAL_Delay(100);
 //		CanSendPdo(CAN_HIGH_SPEED, bms.pdo_consumer_id, 7, &can_frame_template, 0, 4, 0, 1, 2, 0, 0, 0);
 
 //		//Testing receiving messages.
 //		CanSaveReceivedData(CAN_HIGH_SPEED, &can_rx_frame_template);
 //		HAL_Delay(1000);
-//
+
 //		CanSendSdo(CAN_HIGH_SPEED, 10, &can_frame_template, 3, can_rx_frame_template.rx_data[0], can_rx_frame_template.rx_data[1], can_rx_frame_template.rx_data[2], 0, 0, 0, 0, 0);
 //		HAL_Delay(1000);
 
