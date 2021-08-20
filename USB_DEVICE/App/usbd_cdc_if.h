@@ -118,7 +118,8 @@ uint8_t CDC_Transmit_HS(uint8_t* Buf, uint16_t Len);
 
 /* USER CODE BEGIN EXPORTED_FUNCTIONS */
 void UsbTransfer(CanDataFrameInit *can_frame_template);
-void UsbTransferData(uint8_t node_id, uint8_t *data);
+void UsbTransferData(uint8_t node_id, CanDataFrameInit *dataFrame);
+void UsbSendData(uint8_t node_id,uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4, uint8_t byte5, uint8_t byte6);
 
 /* USER CODE END EXPORTED_FUNCTIONS */
 

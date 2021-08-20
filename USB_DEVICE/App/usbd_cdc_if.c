@@ -274,7 +274,7 @@ static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
   /* USER CODE BEGIN 11 */
 	USBD_CDC_SetRxBuffer(&hUsbDeviceHS, &Buf[0]);
 	USBD_CDC_ReceivePacket(&hUsbDeviceHS);
-	strlcpy(usb_received_data, Buf, *Len + 1);
+	strlcpy((&usb_received_data), Buf, *Len + 1);
 
 	if (usb_received_data[0] == '1') {
 		HAL_GPIO_WritePin(LED_D4_GPIO_Port, LED_D4_Pin, GPIO_PIN_SET);
@@ -344,7 +344,7 @@ void UsbTransfer(CanDataFrameInit *ptr_can_frame_template) {
 //	uint8_t usb_tx_data_buffer[buffer_size];
 
 	message_length = sprintf(&usb_tx_data_buffer,
-			"%03X[%01X]%02X%02X%02X%02X%02X%02X%02X%02X\r\n", // 050[8]DEADBEEFFEEDDEAD
+			"%03X[%01X]%02X%02X%02X%02X%02X%02X\r\n", // 050[8]DEADBEEFFEEDDEAD
 			ptr_can_frame_template->rx_header.StdId,
 			ptr_can_frame_template->rx_header.DLC,
 			ptr_can_frame_template->rx_data[0],
@@ -352,19 +352,31 @@ void UsbTransfer(CanDataFrameInit *ptr_can_frame_template) {
 			ptr_can_frame_template->rx_data[2],
 			ptr_can_frame_template->rx_data[3],
 			ptr_can_frame_template->rx_data[4],
-			ptr_can_frame_template->rx_data[5],
-			ptr_can_frame_template->rx_data[6],
-			ptr_can_frame_template->rx_data[7]);
+			ptr_can_frame_template->rx_data[5]);
 	CDC_Transmit_HS(usb_tx_data_buffer, message_length);
 
 }
 
-void UsbTransferData(uint8_t node_id, uint8_t *data) {
+void UsbTransferData(uint8_t node_id, CanDataFrameInit *CanFrameTemplate) {
 	message_length = sprintf(uart_data_to_send,
-			"USB: [%02X]%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X\r", node_id,
-			data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
+			"USB: %02X%02X%02X%02X%02X%02X%02X%02X\r", node_id,
+			CanFrameTemplate->tx_data[0], CanFrameTemplate->tx_data[1],
+			CanFrameTemplate->tx_data[2], CanFrameTemplate->tx_data[3],
+			CanFrameTemplate->tx_data[4], CanFrameTemplate->tx_data[5],
+			CanFrameTemplate->tx_data[6], CanFrameTemplate->tx_data[7]);
+
 	CDC_Transmit_HS(&uart_data_to_send, message_length);
 
+}
+
+void UsbSendData(uint8_t node_id,uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4, uint8_t byte5, uint8_t byte6)
+{
+
+	message_length = sprintf(uart_data_to_send,
+			"USB: [%02X]%02X:%02X:%02X:%02X:%02X:%02X:%02X\r",
+			node_id, byte0, byte1, byte2, byte3, byte4, byte5, byte6);
+
+	CDC_Transmit_HS(&uart_data_to_send, message_length);
 }
 
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */

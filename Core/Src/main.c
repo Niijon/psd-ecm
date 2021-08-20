@@ -174,16 +174,16 @@ int main(void)
 //		HAL_Delay(100);
 //		CanSendPdo(CAN_HIGH_SPEED, &_Dashboard.BMSInformationFramePDO);
 
-//		HAL_Delay(1000);
-//		CanExtendedFrame(hcan1, 0x1806E5F4, 8 , &can_frame_template , 0x04, 0x7E, 0, 100, 0, 0, 0, 0);
+//		HAL_Delay(10);
+//		CanExtendedFrame(hcan1, 10, 8 , &can_frame_template , 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
 
-		UsbTransferData(0x10, &can_frame_template.tx_data);
+		//UsbSendData(0x10, &can_frame_template.tx_data, 0xFF, 0x10, 0x12, 0x13, 0x14, 0x15, 0x16, 0, 0);
 		HAL_Delay(1000);
 
 ////		PDO transfer testing
 
-//		HAL_Delay(100);
-//		CanSendPdo(CAN_HIGH_SPEED, bms.pdo_consumer_id, 7, &can_frame_template, 0, 4, 0, 1, 2, 0, 0, 0);
+//		HAL_Delay(10);
+//		CanSendPdo(hcan1, 0x10, 8, &can_frame_template, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
 
 //		//Testing receiving messages.
 //		CanSaveReceivedData(CAN_HIGH_SPEED, &can_rx_frame_template);
@@ -192,11 +192,12 @@ int main(void)
 //		CanSendSdo(CAN_HIGH_SPEED, 10, &can_frame_template, 3, can_rx_frame_template.rx_data[0], can_rx_frame_template.rx_data[1], can_rx_frame_template.rx_data[2], 0, 0, 0, 0, 0);
 //		HAL_Delay(1000);
 
+	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 
-	}
+
   /* USER CODE END 3 */
 }
 

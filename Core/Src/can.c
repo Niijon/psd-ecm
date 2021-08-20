@@ -44,6 +44,7 @@ CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
 /* CAN1 init function */
+//250
 void MX_CAN1_Init(void)
 {
   hcan1.Instance = CAN1;
@@ -65,10 +66,11 @@ void MX_CAN1_Init(void)
 
 }
 /* CAN2 init function */
+
 void MX_CAN2_Init(void)
 {
   hcan2.Instance = CAN2;
-  hcan2.Init.Prescaler = 10; //Officially 50
+  hcan2.Init.Prescaler = 50; //Officially 50
   hcan2.Init.Mode = CAN_MODE_NORMAL;
   hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
   hcan2.Init.TimeSeg1 = CAN_BS1_13TQ;

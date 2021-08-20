@@ -57,7 +57,7 @@ USBD_HandleTypeDef hUsbDeviceHS;
 /* USER CODE BEGIN 1 */
 void hUsbDeviceHSInit()
 {
-	hUsbDeviceHS.dev_speed = 115200;
+	//hUsbDeviceHS.dev_speed = 115200;
 }
 
 /* USER CODE END 1 */
@@ -69,6 +69,7 @@ void hUsbDeviceHSInit()
 void MX_USB_DEVICE_Init(void)
 {
   /* USER CODE BEGIN USB_DEVICE_Init_PreTreatment */
+
 	hUsbDeviceHSInit();
 
   /* USER CODE END USB_DEVICE_Init_PreTreatment */

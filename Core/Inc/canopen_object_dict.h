@@ -296,28 +296,29 @@ void MakeDataFrame(MPPT *MPPT, UNSIGNED8 byte0, UNSIGNED8 byte1, UNSIGNED8 byte2
 /*******************************************************************************
  OBJECT DICTIONARY
  *******************************************************************************/
-//#define CO_OD_NoOfElements             9
-////CanopenNode dashboard;				// ECM
-////CanopenNode inverter_1;				// ECM
-////CanopenNode inverter_2;				// ECM
-////CanopenNode mppt_1;					// ECM
-////CanopenNode mppt_2;					// ECM
-////CanopenNode mppt_3;					// ECM
-////CanopenNode ecm;
-////CanopenNode bms;	                // MPPTs, Inverters, Dashboard, Lights controller
-CanopenNode lights_controller;		// ECM
-//					// ECM
-#define CO_OD_NoOfElements  10
-Dashboard _Dashboard;
-BMS _BMS;
-Inverter _Inverter1;
-Inverter _Inverter2;
-MPPT _MPPT1;
-MPPT _MPPT2;
-MPPT _MPPT3;
-LightsController _LightsController;
-UNSIGNED8 DefaultFFCanFrame[8];
-void CanopenObjectDictInit();
-void CanOpenObjectsInit();
+#define CO_OD_NoOfElements             9
+CanopenNode dashboard;				// ECM
+CanopenNode inverter_1;				// ECM
+CanopenNode inverter_2;				// ECM
+CanopenNode mppt_1;					// ECM
+CanopenNode mppt_2;					// ECM
+CanopenNode mppt_3;					// ECM
+CanopenNode ecm;
+CanopenNode bms;	                // MPPTs, Inverters, Dashboard, Lights controller
+CanopenNode lights_controller;
+
+
+//#define CO_ODO_NoOfElements  10
+//Dashboard _Dashboard;
+//BMS _BMS;
+//Inverter _Inverter1;
+//Inverter _Inverter2;
+//MPPT _MPPT1;
+//MPPT _MPPT2;
+//MPPT _MPPT3;
+//LightsController _LightsController;
+//UNSIGNED8 DefaultFFCanFrame[8];
+//void CanopenObjectDictInit();
+//void CanOpenObjectsInit();
 
 
