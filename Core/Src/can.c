@@ -491,8 +491,37 @@ void CanClearRxDataFrame(CanDataFrameInit *ptr_can_frame_template) {
 	ptr_can_frame_template->rx_data[7] = 0x0;
 }
 
+void CanSendExtendedIdMessage(CAN_HandleTypeDef chosen_network, uint8_t FrameId,
+	CanDataFrameInit *ptr_can_frame_template, uint8_t DLC,
+	uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
+	uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7)
+{
+	ptr_can_frame_template->tx_header.ExtId = FrameId;
+	ptr_can_frame_template->tx_header.RTR = CAN_RTR_DATA;
+	ptr_can_frame_template->tx_header.IDE = CAN_ID_EXT;
+	ptr_can_frame_template->tx_header.DLC = DLC;
+	ptr_can_frame_template->tx_header.TransmitGlobalTime = DISABLE;
+	ptr_can_frame_template->tx_data[0] = byte0;
+	ptr_can_frame_template->tx_data[1] = byte1;
+	ptr_can_frame_template->tx_data[2] = byte2;
+	ptr_can_frame_template->tx_data[3] = byte3;
+	ptr_can_frame_template->tx_data[4] = byte4;
+	ptr_can_frame_template->tx_data[5] = byte5;
+	ptr_can_frame_template->tx_data[6] = byte6;
+	ptr_can_frame_template->tx_data[7] = byte7;
 
+	if (HAL_CAN_AddTxMessage(&chosen_network,
+		&ptr_can_frame_template->tx_header, ptr_can_frame_template->tx_data,
+		&can_tx_mailbox) != HAL_OK) {
+	Error_Handler();
+	}
 
+	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
+	}
+
+	CanClearTxDataFrame(ptr_can_frame_template);
+
+}
 
 /* USER CODE END 1 */
 
