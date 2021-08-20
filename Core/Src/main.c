@@ -179,6 +179,9 @@ int main(void)
 //		//actual data upload.
 //		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 2, 2, 0, 0, 0, 0, 0, 0, 0);
 
+		/* Extended Can frame method */
+//		HAL_Delay(10);
+//		CanSendExtendedIdMessage(hcan1, &can_frame_template, 10, 8, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
 
 
 

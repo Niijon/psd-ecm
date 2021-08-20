@@ -91,10 +91,10 @@ void CanSendSdo(CAN_HandleTypeDef chosen_network, uint8_t frame_sdo_id,
 		uint8_t command_byte, uint8_t byte0, uint8_t byte1, uint8_t byte2,
 		uint8_t byte3, uint8_t byte4, uint8_t byte5, uint8_t byte6);
 
-void CanSendExtendedIdMessage(CAN_HandleTypeDef chosen_network, uint8_t FrameId,
-		CanDataFrameInit *ptr_can_frame_template, uint8_t DLC,
-		uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
-		uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7);
+void CanSendExtendedIdMessage(CAN_HandleTypeDef chosen_network,
+		CanDataFrameInit *ptr_can_frame_template, uint8_t FrameId, uint8_t DLC,
+	uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
+	uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7);
 
 /* USER CODE END Private defines */
 
