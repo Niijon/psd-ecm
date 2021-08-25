@@ -225,23 +225,9 @@ void SystemClock_Config(void)
 /*CAR STATES MODULES*/
 void ChargingStateModule()
 {
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, bms.node_id,
-		&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_1.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_2.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_1.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_2.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_3.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, lights_controller.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, dashboard.node_id,
-			&can_frame_template);
-
+	StopCanCommunication();
+	HAL_Delay(100);
+	StartCanCommunication();
 	while(1)
 	{
 		CanSendExtendedIdMessage(hcan1, &can_frame_template, 10, 8, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -253,6 +239,15 @@ void ChargingStateModule()
 
 void DrivingStateModule()
 {
+	StopCanCommunication();
+	HAL_Delay(100);
+	StartCanCommunication();
+	while(1)
+	{
+
+		HAL_Delay(2);
+
+	}
 
 }
 

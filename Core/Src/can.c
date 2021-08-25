@@ -442,6 +442,46 @@ void CanSendSdo(CAN_HandleTypeDef chosen_network, uint8_t frame_sdo_id,
 
 }
 
+void StartCanCommunication()
+{
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
+		&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
+			&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
+			&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
+			&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
+			&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
+			&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
+			&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
+			&can_frame_template);
+}
+
+void StopCanCommunication()
+{
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, bms.node_id,
+			&can_frame_template);
+		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_1.node_id,
+				&can_frame_template);
+		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_2.node_id,
+				&can_frame_template);
+		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_1.node_id,
+				&can_frame_template);
+		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_2.node_id,
+				&can_frame_template);
+		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_3.node_id,
+				&can_frame_template);
+		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, lights_controller.node_id,
+				&can_frame_template);
+		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, dashboard.node_id,
+				&can_frame_template);
+}
+
 /**
  * @brief Transfer specific CAN data frame to selected low or high speed network
  * @param hcanx: chosen network
