@@ -147,37 +147,22 @@ int main(void)
 	 USB
 	 ************************************************************************************************/
 
-
+	can_frame_template = CanMakeFrameWithValue(&can_frame_template, inverter_1.node_id, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10);
+	can_frame_template.rx_header.DLC = 8;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-
-		HAL_Delay(1000);
-
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
-//					&can_frame_template);
+		HAL_Delay(100);
 
 //		//initializing data upload
 //		CanSendSdo(CAN_HIGH_SPEED, inverter_1.node_id , &can_frame_template , 0, 1, 0, 0, 0, 0, 0, 0, 0);
 //
 //		//actual data upload.
 //		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 2, 2, 0, 0, 0, 0, 0, 0, 0);
+
+		UsbTransfer(&can_frame_template);
 
 		/* Extended Can frame method */
 //		HAL_Delay(10);
@@ -237,6 +222,47 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+/*CAR STATES MODULES*/
+void ChargingStateModule()
+{
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, bms.node_id,
+		&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_1.node_id,
+			&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_2.node_id,
+			&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_1.node_id,
+			&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_2.node_id,
+			&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_3.node_id,
+			&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, lights_controller.node_id,
+			&can_frame_template);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, dashboard.node_id,
+			&can_frame_template);
+
+	while(1)
+	{
+		CanSendExtendedIdMessage(hcan1, &can_frame_template, 10, 8, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+		HAL_Delay(1000);
+
+	}
+
+}
+
+void DrivingStateModule()
+{
+
+}
+
+/*Only optional to talk out with people*/
+void ParkingStateModule()
+{
+
+}
+
+
 
 /* USER CODE END 4 */
 
@@ -251,6 +277,8 @@ void Error_Handler(void)
 
   /* USER CODE END Error_Handler_Debug */
 }
+
+
 
 #ifdef  USE_FULL_ASSERT
 /**

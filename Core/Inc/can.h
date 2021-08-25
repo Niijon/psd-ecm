@@ -96,6 +96,9 @@ void CanSendExtendedIdMessage(CAN_HandleTypeDef chosen_network,
 	uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
 	uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7);
 
+CanDataFrameInit CanMakeFrameWithValue(CanDataFrameInit *CanFrame, uint8_t frameId, uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7);
+
+
 /* USER CODE END Private defines */
 
 void MX_CAN1_Init(void);

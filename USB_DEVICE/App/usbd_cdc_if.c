@@ -342,7 +342,7 @@ void UsbTransfer(CanDataFrameInit *ptr_can_frame_template) {
 //	uint8_t usb_tx_data_buffer[buffer_size];
 
 	message_length = sprintf(&usb_tx_data_buffer,
-			"%03X[%01X]%02X%02X%02X%02X%02X%02X%02X%02X\r\n", // 050[8]DEADBEEFFEEDDEAD
+			"%3X[%01X]%02X%02X%02X%02X%02X%02X%02X%02X\r\n", // 050[8]DEADBEEFFEEDDEAD
 			ptr_can_frame_template->rx_header.StdId,
 			ptr_can_frame_template->rx_header.DLC,
 			ptr_can_frame_template->rx_data[0],

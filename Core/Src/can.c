@@ -385,6 +385,23 @@ void CanSendPdo(CAN_HandleTypeDef chosen_network, uint8_t frame_pdo_id,
 
 }
 
+CanDataFrameInit CanMakeFrameWithValue(CanDataFrameInit *CanFrame, uint8_t frameId, uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7)
+{
+	CanFrame->rx_header.StdId = frameId;
+	CanFrame->rx_header.RTR = CAN_RTR_DATA;
+	CanFrame->rx_header.IDE = CAN_ID_STD;
+	CanFrame->rx_header.DLC = 8;
+	CanFrame->rx_data[0] = byte0;
+	CanFrame->rx_data[1] = byte1;
+	CanFrame->rx_data[2] = byte2;
+	CanFrame->rx_data[3] = byte3;
+	CanFrame->rx_data[4] = byte4;
+	CanFrame->rx_data[5] = byte5;
+	CanFrame->rx_data[6] = byte6;
+	CanFrame->rx_data[7] = byte7;
+	return *CanFrame;
+}
+
 /**
  * @brief Transfer CAN SDO frame to chosen network
  * @param chosen_network: CAN_HIGH_SPEED or CAN_LOW_SPEED
@@ -520,9 +537,7 @@ void CanSendExtendedIdMessage(CAN_HandleTypeDef chosen_network,
 	}
 
 	CanClearTxDataFrame(ptr_can_frame_template);
-
 }
-
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

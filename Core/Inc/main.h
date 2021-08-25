@@ -51,6 +51,10 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
+void ChargingStateModule();
+void DrivingStateModule();
+/*Only optional to talk out with people*/
+void ParkingStateModule();
 
 /* USER CODE BEGIN EFP */
 
