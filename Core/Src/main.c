@@ -226,7 +226,7 @@ void SystemClock_Config(void)
 void ChargingStateModule()
 {
 	StopCanCommunication();
-	HAL_Delay(100);
+	HAL_Delay(2);
 	StartCanCommunication();
 	while(1)
 	{
@@ -239,6 +239,7 @@ void ChargingStateModule()
 				CanSendExtendedIdMessage(hcan1, &can_frame_template, 10, 8, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
 				HAL_Delay(1000);
 			}
+			CanClearRxDataFrame(&canFrame);
 		}
 	}
 
@@ -247,11 +248,19 @@ void ChargingStateModule()
 void DrivingStateModule()
 {
 	StopCanCommunication();
-	HAL_Delay(100);
+	HAL_Delay(2);
 	StartCanCommunication();
 	while(1)
 	{
+		canFrame = CanSaveReceivedData(CAN_HIGH_SPEED, &can_frame_template);
+		UsbTransfer(&canFrame);
+		CanClearRxDataFrame(&can_frame_template);
+		CanClearRxDataFrame(&canFrame);
 
+		canFrame = CanSaveReceivedData(CAN_LOW_SPEED, &can_frame_template);
+		UsbTransfer(&canFrame);
+		CanClearRxDataFrame(&can_frame_template);
+		CanClearRxDataFrame(&canFrame);
 	}
 
 }
