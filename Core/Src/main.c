@@ -45,7 +45,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+CanDataFrameInit canFrame;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -230,9 +230,16 @@ void ChargingStateModule()
 	StartCanCommunication();
 	while(1)
 	{
-		CanSendExtendedIdMessage(hcan1, &can_frame_template, 10, 8, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-		HAL_Delay(1000);
-
+		canFrame = CanSaveReceivedData(hcan1, &can_frame_template);
+		CanClearRxDataFrame(&can_frame_template);
+		if(canFrame.rx_header.ExtId == 0x18FF50E5)
+		{
+			if(ActUponCurrentAndVoltage(&canFrame, 30000, 20000))
+			{
+				CanSendExtendedIdMessage(hcan1, &can_frame_template, 10, 8, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
+				HAL_Delay(1000);
+			}
+		}
 	}
 
 }
@@ -244,8 +251,6 @@ void DrivingStateModule()
 	StartCanCommunication();
 	while(1)
 	{
-
-		HAL_Delay(2);
 
 	}
 

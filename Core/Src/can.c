@@ -19,7 +19,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
-
 /* USER CODE BEGIN 0 */
 #include "usbd_cdc_if.h"
 #include "canopen_object_dict.h"
@@ -249,13 +248,22 @@ void CanInit(CAN_HandleTypeDef chosen_network) {
  * @param chosen_network
  *
  **/
-void CanSaveReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template) {
+void CanReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template) {
 	if (HAL_CAN_GetRxMessage(&chosen_network, CAN_RX_FIFO0, &ptr_can_rx_frame_template->rx_header,
 			ptr_can_rx_frame_template->rx_data) != HAL_OK) {
 		/* Reception Error */
 		Error_Handler();
 	}
-//	CanClearRxDataFrame(ptr_can_rx_frame_template);
+	CanClearRxDataFrame(ptr_can_rx_frame_template);
+}
+
+CanDataFrameInit CanSaveReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template) {
+	if (HAL_CAN_GetRxMessage(&chosen_network, CAN_RX_FIFO0, &ptr_can_rx_frame_template->rx_header,
+			ptr_can_rx_frame_template->rx_data) != HAL_OK) {
+		/* Reception Error */
+		Error_Handler();
+	}
+	return *ptr_can_rx_frame_template;
 }
 
 /**
@@ -446,40 +454,56 @@ void StartCanCommunication()
 {
 	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
 		&can_frame_template);
+	HAL_Delay(1);
 	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
 			&can_frame_template);
+	HAL_Delay(1);
 	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
 			&can_frame_template);
+	HAL_Delay(1);
 	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
 			&can_frame_template);
+	HAL_Delay(1);
 	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
 			&can_frame_template);
+	HAL_Delay(1);
 	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
 			&can_frame_template);
+	HAL_Delay(1);
 	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
 			&can_frame_template);
+	HAL_Delay(1);
 	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
 			&can_frame_template);
+	HAL_Delay(1);
 }
 
 void StopCanCommunication()
 {
 	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, bms.node_id,
 			&can_frame_template);
-		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_1.node_id,
-				&can_frame_template);
-		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_2.node_id,
-				&can_frame_template);
-		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_1.node_id,
-				&can_frame_template);
-		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_2.node_id,
-				&can_frame_template);
-		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_3.node_id,
-				&can_frame_template);
-		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, lights_controller.node_id,
-				&can_frame_template);
-		CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, dashboard.node_id,
-				&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_1.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_2.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_1.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_2.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_3.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, lights_controller.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, dashboard.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
 }
 
 /**
@@ -578,6 +602,47 @@ void CanSendExtendedIdMessage(CAN_HandleTypeDef chosen_network,
 
 	CanClearTxDataFrame(ptr_can_frame_template);
 }
+
+/*My math mini library BEGIN*/
+
+int unParse2Bytes(uint8_t lowerByte, uint8_t higherByte)
+{
+	int cas = ((int)lowerByte + (int)higherByte * byteMaxValue);
+	return cas;
+}
+
+GluedBytes Parse2Bytes(int toParse)
+{
+	GluedBytes parsed16;
+	parsed16.lowerByte = toParse % byteMaxValue;
+	parsed16.higherByte = (toParse / byteMaxValue) % byteMaxValue;
+	return parsed16;
+}
+
+GluedBytes MakeGluedBytes(uint8_t lowerByte, uint8_t higherByte)
+{
+	GluedBytes bytes;
+	bytes.lowerByte = lowerByte;
+	bytes.higherByte = higherByte;
+	return bytes;
+}
+/*My math mini library END*/
+
+/*CAN COMMUNICATION SECTION BEGIN*/
+/*CHARGING ACTIONS BEGIN*/
+bool ActUponCurrentAndVoltage(CanDataFrameInit *canFrame, int maxVoltage, int maxCurrent)
+{
+	int voltage = unParse2Bytes(canFrame->rx_data[1], canFrame->rx_data[0]);
+	int current = unParse2Bytes(canFrame->rx_data[3], canFrame->rx_data[2]);
+	return (voltage<maxVoltage && current<maxCurrent);
+}
+/*CHARGING ACTIONS END*/
+
+/*DRIVING ACTIONS BEGIN*/
+
+/*DRIVING ACTIONS END*/
+/*CAN COMMUNICATION SECTION END*/
+
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

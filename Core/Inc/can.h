@@ -25,7 +25,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include <stdbool.h>
+#include <stdio.h>
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -60,6 +61,19 @@ typedef struct {
 	uint8_t rx_data[8];
 } CanDataFrameInit;
 
+#define byteMaxValue 256
+
+/*Mini math lib declarations*/
+typedef struct GluedBytes
+{
+	uint8_t lowerByte;
+	uint8_t higherByte;
+} GluedBytes;
+
+GluedBytes Parse2Bytes(int toParse);
+int unParse2Bytes(uint8_t lowerByte, uint8_t higherByte);
+/**/
+
 extern CanDataFrameInit can_frame_template;
 extern CanDataFrameInit can_rx_frame_template;
 
@@ -70,7 +84,8 @@ void CanConfigFilter(CAN_HandleTypeDef hcanx, uint8_t can_filter_bank,
 		uint32_t can_filter_id_high, uint32_t can_filter_id_low,
 		uint32_t can_filter_mask_id_high, uint32_t can_filter_mask_id_low);
 
-void CanSaveReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template);
+void CanReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template);
+CanDataFrameInit CanSaveReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template);
 void CanTransfer(CAN_HandleTypeDef hcanx, uint32_t sender_id,
 		uint32_t receiver_id);
 
@@ -100,13 +115,13 @@ CanDataFrameInit CanMakeFrameWithValue(CanDataFrameInit *CanFrame, uint8_t frame
 
 void StartCanCommunication();
 void StopCanCommunication();
-
 /* USER CODE END Private defines */
 
 void MX_CAN1_Init(void);
 void MX_CAN2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+bool ActUponCurrentAndVoltage(CanDataFrameInit *canFrame, int maxVoltage, int maxCurrent);
 
 /* USER CODE END Prototypes */
 
