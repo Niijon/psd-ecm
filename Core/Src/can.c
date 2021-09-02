@@ -36,6 +36,7 @@ uint8_t count = 0;
 uint32_t TxMailbox;
 CanDataFrameInit can_rx_frame_template;
 
+
 uint32_t can_tx_mailbox;
 
 /* USER CODE END 0 */
@@ -419,7 +420,7 @@ CanDataFrameInit CanMakeFrameWithValue(CanDataFrameInit *CanFrame, uint8_t frame
  * @param *ptr_can_frame_template: pointer to a structure containing basic frame parameters
  *
  **/
-void CanSendSdo(CAN_HandleTypeDef chosen_network, uint8_t frame_sdo_id,
+void CanSendSdo(CAN_HandleTypeDef chosen_network, uint32_t frame_sdo_id,
 		CanDataFrameInit *ptr_can_frame_template, uint8_t number_of_bytes,
 		uint8_t command_byte, uint8_t byte0, uint8_t byte1, uint8_t byte2,
 		uint8_t byte3, uint8_t byte4, uint8_t byte5, uint8_t byte6) {
@@ -514,8 +515,8 @@ void StopCanCommunication()
  *
  * TODO(szymon): adaptacja do wersji programu ze wskaznikiem na strukture ramki
  **/
-void CanTransfer(CAN_HandleTypeDef hcanx, uint32_t sender_id,
-		uint32_t receiver_id) {
+/*
+void CanTransfer(CAN_HandleTypeDef hcanx, CanDataFrameInit *canFrame, uint32_t sender_id) {
 	if ((can_rx_header.StdId == sender_id)
 			&& (can_rx_header.RTR == CAN_RTR_DATA)
 			&& (can_rx_header.IDE == CAN_ID_STD)) {
@@ -525,13 +526,14 @@ void CanTransfer(CAN_HandleTypeDef hcanx, uint32_t sender_id,
 	} else {
 		HAL_GPIO_TogglePin(LED_D6_GPIO_Port, LED_D6_Pin);
 	}
+	canFrame->tx_header.DLC = canFrame->rx_header.DLC;
 
-	if (HAL_CAN_AddTxMessage(&hcanx, &can_rx_frame_template.tx_header,
-			can_rx_frame_template.tx_data, &can_tx_mailbox) != HAL_OK) {
+	if (HAL_CAN_AddTxMessage(&hcanx, canFrame->tx_header,
+			canFrame->rx_data, &can_tx_mailbox) != HAL_OK) {
 		Error_Handler();
 	}
 }
-
+*/
 /**
  * @brief: data sent over usb is not correctly shown when structure is not cleared
  *         after every message sent. Assigning zeros has no influence on the network
@@ -639,6 +641,10 @@ bool ActUponCurrentAndVoltage(CanDataFrameInit *canFrame, int maxVoltage, int ma
 /*CHARGING ACTIONS END*/
 
 /*DRIVING ACTIONS BEGIN*/
+bool CatchErrorOccuring(CanDataFrameInit *canFrame)
+{
+	return canFrame->rx_header.StdId == 0x69;
+}
 
 /*DRIVING ACTIONS END*/
 /*CAN COMMUNICATION SECTION END*/

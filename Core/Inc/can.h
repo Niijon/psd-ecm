@@ -51,6 +51,10 @@ extern CAN_HandleTypeDef hcan2;
 #define SDO_UPLOAD   0b00100000
 #define SDO_DOWNLOAD 0b01000000
 
+bool error;
+bool charging;
+bool driving;
+
 /*******************************************************************************
  DECLARATIONS
  *******************************************************************************/
@@ -74,6 +78,8 @@ GluedBytes Parse2Bytes(int toParse);
 int unParse2Bytes(uint8_t lowerByte, uint8_t higherByte);
 /**/
 
+bool CatchErrorOccuring(CanDataFrameInit *canFrame);
+
 extern CanDataFrameInit can_frame_template;
 extern CanDataFrameInit can_rx_frame_template;
 
@@ -86,8 +92,7 @@ void CanConfigFilter(CAN_HandleTypeDef hcanx, uint8_t can_filter_bank,
 
 void CanReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template);
 CanDataFrameInit CanSaveReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template);
-void CanTransfer(CAN_HandleTypeDef hcanx, uint32_t sender_id,
-		uint32_t receiver_id);
+/*void CanTransfer(CAN_HandleTypeDef hcanx, CanDataFrameInit *canFrame, uint32_t sender_id);*/
 
 void CanClearTxDataFrame(CanDataFrameInit *can_frame_template);
 void CanClearRxDataFrame(CanDataFrameInit *ptr_can_frame_template);
@@ -101,7 +106,7 @@ void CanSendPdo(CAN_HandleTypeDef chosen_network, uint8_t frame_pdo_id,
 		uint8_t number_of_bytes, CanDataFrameInit *can_frame_template,
 		uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
 		uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7);
-void CanSendSdo(CAN_HandleTypeDef chosen_network, uint8_t frame_sdo_id,
+void CanSendSdo(CAN_HandleTypeDef chosen_network, uint32_t frame_sdo_id,
 		CanDataFrameInit *ptr_can_frame_template, uint8_t number_of_bytes,
 		uint8_t command_byte, uint8_t byte0, uint8_t byte1, uint8_t byte2,
 		uint8_t byte3, uint8_t byte4, uint8_t byte5, uint8_t byte6);

@@ -55,6 +55,8 @@ void ChargingStateModule();
 void DrivingStateModule();
 /*Only optional to talk out with people*/
 void ParkingStateModule();
+void HandleHighSpeed();
+void HandleLowSpeed();
 
 /* USER CODE BEGIN EFP */
 
