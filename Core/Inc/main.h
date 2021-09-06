@@ -51,12 +51,6 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-void ChargingStateModule();
-void DrivingStateModule();
-/*Only optional to talk out with people*/
-void ParkingStateModule();
-void HandleHighSpeed();
-void HandleLowSpeed();
 
 /* USER CODE BEGIN EFP */
 
@@ -127,6 +121,13 @@ void HandleLowSpeed();
 #define OPTO_INPUT1_GPIO_Port GPIOE
 #define OPTO_INPUT1_EXTI_IRQn EXTI1_IRQn
 /* USER CODE BEGIN Private defines */
+
+void ChargingStateModule();
+void DrivingStateModule();
+/*Only optional to talk out with people*/
+void ParkingStateModule();
+void HandleHighSpeed();
+void HandleLowSpeed();
 
 /* USER CODE END Private defines */
 

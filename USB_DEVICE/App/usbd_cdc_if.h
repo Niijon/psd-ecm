@@ -108,10 +108,11 @@ extern USBD_CDC_ItfTypeDef USBD_Interface_fops_HS;
   */
 
 uint8_t CDC_Transmit_HS(uint8_t* Buf, uint16_t Len);
-void UsbTransferDataByte(uint32_t nodeId, uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4,  uint8_t byte5, uint8_t byte6, uint8_t byte7);
+
 /* USER CODE BEGIN EXPORTED_FUNCTIONS */
 void UsbTransfer(CanDataFrameInit *can_frame_template);
 void UsbTransferData(uint8_t node_id, uint8_t *data);
+void UsbTransferDataByte(uint32_t nodeId, uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4,  uint8_t byte5, uint8_t byte6, uint8_t byte7);
 
 /* USER CODE END EXPORTED_FUNCTIONS */
 

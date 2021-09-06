@@ -127,22 +127,22 @@ int main(void)
 	/************************************************************************************************
 	 TURNING ON THE MODULES
 	 ************************************************************************************************/
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
-			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
+//			&can_frame_template);
 	/************************************************************************************************
 	 USB
 	 ************************************************************************************************/
@@ -153,8 +153,8 @@ int main(void)
 	error = false;
 	charging = false;
 	driving = false;
-	UNSIGNED8 speed = 0;
-	UNSIGNED8 inc =5;
+//	UNSIGNED8 speed = 0;
+//	UNSIGNED8 inc =5;
 	while (1) {
 //		ChargingStateModule();
 //		DrivingStateModule();
@@ -164,22 +164,28 @@ int main(void)
 //		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 2, 2, 0, 0, 0, 0, 0, 0, 0);
 //		UsbTransfer(&can_frame_template);
 
-		if(speed>100)
-			inc = -inc;
-		else if(speed<25)
-			inc = -inc;
+//		if(speed>100)
+//			inc = -inc;
+//		else if(speed<25)
+//			inc = -inc;
 
-		UsbTransferDataByte(0x290, 0, 0, 0, 0x45, 0, 0, 0, 0);
-		HAL_Delay(100);
+//		UsbTransferDataByte(0x290, 0, 0, 0, 0x45, 0, 0, 0, 0);
+//		HAL_Delay(100);
 
-//		CanSendSdo(CAN_LOW_SPEED, 0x581, &can_frame_template, 8, SDO_DOWNLOAD, 0x6, 0x9, 0, 0, 0, 0, 0);
-//		HAL_Delay(1000);
+		CanSendSdo(CAN_HIGH_SPEED, 0x581, &can_frame_template, 8, SDO_DOWNLOAD, 0x6, 0x9, 0, 0, 0, 0, 0);
+		HAL_Delay(10);
 
-		UsbTransferDataByte(0x581, SDO_DOWNLOAD, 0x6, 0x1, 0, 0, 0, 0, 0);
-		HAL_Delay(100);
+		UsbTransferDataByte(0x18B, 0x0, 0x0, 0x1, 0, 0, 0, 0, 0);
+		HAL_Delay(10);
 
-		UsbTransferDataByte(0x185, 0xD2, 0xD2, 0xD0, 0xD3, 0xD2, 0xD0, 0xBE, 0xD0);
-		HAL_Delay(100);
+		UsbTransferDataByte(0x85, 0x1, 0x2, 0x0, 0, 0, 0, 0, 0);
+		HAL_Delay(10);
+
+		UsbTransferDataByte(0x55, 0x0, 0x0, 0x0, 0, 0, 0, 0, 0);
+		HAL_Delay(10);
+//
+//		UsbTransferDataByte(0x185, 0xD2, 0xD2, 0xD0, 0xD3, 0xD2, 0xD0, 0xBE, 0xD0);
+//		HAL_Delay(100);
 		/* Extended Can frame method */
 //		CanSendExtendedIdMessage(hcan1, &can_frame_template, 10, 8, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
 
@@ -314,8 +320,6 @@ void Error_Handler(void)
 
   /* USER CODE END Error_Handler_Debug */
 }
-
-
 
 #ifdef  USE_FULL_ASSERT
 /**
