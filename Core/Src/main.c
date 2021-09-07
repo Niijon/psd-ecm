@@ -172,7 +172,7 @@ int main(void)
 //		UsbTransferDataByte(0x290, 0, 0, 0, 0x45, 0, 0, 0, 0);
 //		HAL_Delay(100);
 
-		CanSendSdo(CAN_HIGH_SPEED, 0x581, &can_frame_template, 8, SDO_DOWNLOAD, 0x6, 0x9, 0, 0, 0, 0, 0);
+		CanSendSdo(CAN_HIGH_SPEED, 0x581, &can_frame_template, 8, SDO_DOWNLOAD, 0x6, 0x1, 0, 0, 0, 0, 0);
 		HAL_Delay(10);
 
 		UsbTransferDataByte(0x18B, 0x0, 0x0, 0x1, 0, 0, 0, 0, 0);
