@@ -65,9 +65,11 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(CAN2_RS_GPIO_Port, CAN2_RS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PEPin PEPin PEPin PEPin
-                           PEPin PEPin */
+                           PEPin PEPin PEPin PEPin
+                           PEPin */
   GPIO_InitStruct.Pin = OPTO_INPUT2_Pin|OPTO_INPUT3_Pin|OPTO_INPUT4_Pin|OPTO_INPUT5_Pin
-                          |OPTO_INPUT6_Pin|OPTO_INPUT1_Pin;
+                          |OPTO_INPUT6_Pin|OPTO_INPUT7_Pin|OPTO_INPUT8_Pin|OPTO_INPUT9_Pin
+                          |OPTO_INPUT1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
@@ -80,11 +82,9 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PEPin PEPin PEPin PEPin
-                           PEPin PEPin PEPin PEPin
-                           PEPin */
-  GPIO_InitStruct.Pin = OPTO_INPUT15_Pin|OPTO_INPUT14_Pin|OPTO_INPUT13_Pin|OPTO_INPUT12_Pin
-                          |OPTO_INPUT11_Pin|OPTO_INPUT10_Pin|OPTO_INPUT9_Pin|OPTO_INPUT8_Pin
-                          |OPTO_INPUT7_Pin;
+                           PEPin PEPin */
+  GPIO_InitStruct.Pin = OPTO_INPUT10_Pin|OPTO_INPUT11_Pin|OPTO_INPUT12_Pin|OPTO_INPUT13_Pin
+                          |OPTO_INPUT14_Pin|OPTO_INPUT15_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);

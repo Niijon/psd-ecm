@@ -45,7 +45,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-CanDataFrameInit canFrame;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -153,43 +152,9 @@ int main(void)
 	error = false;
 	charging = false;
 	driving = false;
-//	UNSIGNED8 speed = 0;
-//	UNSIGNED8 inc =5;
 	while (1) {
-//		ChargingStateModule();
-//		DrivingStateModule();
-//		//initializing data upload
-//		CanSendSdo(CAN_HIGH_SPEED, inverter_1.node_id , &can_frame_template , 0, 1, 0, 0, 0, 0, 0, 0, 0);
-//		//actual data upload.
-//		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 2, 2, 0, 0, 0, 0, 0, 0, 0);
-//		UsbTransfer(&can_frame_template);
 
-//		if(speed>100)
-//			inc = -inc;
-//		else if(speed<25)
-//			inc = -inc;
-
-//		UsbTransferDataByte(0x290, 0, 0, 0, 0x45, 0, 0, 0, 0);
-//		HAL_Delay(100);
-
-		CanSendSdo(CAN_HIGH_SPEED, 0x581, &can_frame_template, 8, SDO_DOWNLOAD, 0x6, 0x1, 0, 0, 0, 0, 0);
-		HAL_Delay(10);
-
-		UsbTransferDataByte(0x18B, 0x0, 0x0, 0x1, 0, 0, 0, 0, 0);
-		HAL_Delay(10);
-
-		UsbTransferDataByte(0x85, 0x1, 0x2, 0x0, 0, 0, 0, 0, 0);
-		HAL_Delay(10);
-
-		UsbTransferDataByte(0x55, 0x0, 0x0, 0x0, 0, 0, 0, 0, 0);
-		HAL_Delay(10);
-//
-//		UsbTransferDataByte(0x185, 0xD2, 0xD2, 0xD0, 0xD3, 0xD2, 0xD0, 0xBE, 0xD0);
-//		HAL_Delay(100);
-		/* Extended Can frame method */
-//		CanSendExtendedIdMessage(hcan1, &can_frame_template, 10, 8, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-
-
+		ChargingStateModule();
 
     /* USER CODE END WHILE */
 
@@ -243,70 +208,6 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-/*CAR STATES MODULES*/
-void ChargingStateModule()
-{
-	StopCanCommunication();
-	HAL_Delay(2);
-	StartCanCommunication();
-	while(charging && !error)
-	{
-		canFrame = CanSaveReceivedData(hcan1, &can_frame_template);
-		CanClearRxDataFrame(&can_frame_template);
-		if(canFrame.rx_header.ExtId == 0x18FF50E5)
-		{
-			if(ActUponCurrentAndVoltage(&canFrame, 3000, 200))
-			{
-				CanSendExtendedIdMessage(hcan1, &can_frame_template, 10, 8, 0x03, 0xE8, 0, 10, 0, 0, 0, 0);
-				HAL_Delay(1000);
-			}
-			CanClearRxDataFrame(&canFrame);
-		}
-	}
-
-}
-
-void DrivingStateModule()
-{
-	StopCanCommunication();
-	HAL_Delay(2);
-	StartCanCommunication();
-	while(driving && !error)
-	{
-		HandleHighSpeed();
-
-		HandleLowSpeed();
-	}
-
-}
-
-void HandleHighSpeed()
-{
-
-	canFrame = CanSaveReceivedData(CAN_HIGH_SPEED, &can_frame_template);
-	UsbTransfer(&canFrame);
-	error = CatchErrorOccuring(&canFrame);
-	CanClearRxDataFrame(&can_frame_template);
-	CanClearRxDataFrame(&canFrame);
-}
-
-void HandleLowSpeed()
-{
-	canFrame = CanSaveReceivedData(CAN_LOW_SPEED, &can_frame_template);
-	UsbTransfer(&canFrame);
-	error = CatchErrorOccuring(&canFrame);
-	CanClearRxDataFrame(&can_frame_template);
-	CanClearRxDataFrame(&canFrame);
-}
-
-/*Only optional to talk out with people*/
-void ParkingStateModule()
-{
-
-}
-
-
-
 /* USER CODE END 4 */
 
 /**

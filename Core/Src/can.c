@@ -36,8 +36,9 @@ uint8_t TxData[8];
 uint8_t count = 0;
 uint32_t TxMailbox;
 CanDataFrameInit can_rx_frame_template;
-
-
+bool error;
+bool charging;
+bool driving;
 uint32_t can_tx_mailbox;
 
 /* USER CODE END 0 */
@@ -364,7 +365,31 @@ void CanSendNmt(CAN_HandleTypeDef chosen_network, uint8_t state,
  * @param *can_frame_template: pointer to a structure containing basic frame parameters
  *
  **/
-void CanSendPdo(CAN_HandleTypeDef chosen_network, uint8_t frame_pdo_id,
+void CanTransferFrame(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_frame_template)
+{
+	ptr_can_frame_template->tx_header.StdId = ptr_can_frame_template->rx_header.StdId;
+	ptr_can_frame_template->tx_header.DLC = ptr_can_frame_template->rx_header.DLC;
+	ptr_can_frame_template->tx_data[0] = ptr_can_frame_template->rx_data[0];
+	ptr_can_frame_template->tx_data[1] = ptr_can_frame_template->rx_data[1];
+	ptr_can_frame_template->tx_data[2] = ptr_can_frame_template->rx_data[2];
+	ptr_can_frame_template->tx_data[3] = ptr_can_frame_template->rx_data[3];
+	ptr_can_frame_template->tx_data[4] = ptr_can_frame_template->rx_data[4];
+	ptr_can_frame_template->tx_data[5] = ptr_can_frame_template->rx_data[5];
+	ptr_can_frame_template->tx_data[6] = ptr_can_frame_template->rx_data[6];
+	ptr_can_frame_template->tx_data[7] = ptr_can_frame_template->rx_data[7];
+
+	if (HAL_CAN_AddTxMessage(&chosen_network,
+			&ptr_can_frame_template->tx_header, ptr_can_frame_template->tx_data,
+			&can_tx_mailbox) != HAL_OK) {
+		Error_Handler();
+	}
+
+	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
+	}
+	CanClearTxDataFrame(ptr_can_frame_template);
+}
+
+void CanSendPdo(CAN_HandleTypeDef chosen_network, uint32_t frame_pdo_id,
 		uint8_t number_of_bytes, CanDataFrameInit *ptr_can_frame_template,
 		uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
 		uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7) {
@@ -561,6 +586,7 @@ void CanClearTxDataFrame(CanDataFrameInit *ptr_can_frame_template) {
 
 void CanClearRxDataFrame(CanDataFrameInit *ptr_can_frame_template) {
 	ptr_can_frame_template->rx_header.StdId = 0x00;
+	ptr_can_frame_template->rx_header.ExtId = 0x00;
 	ptr_can_frame_template->rx_header.RTR = CAN_RTR_DATA;
 	ptr_can_frame_template->rx_header.IDE = CAN_ID_STD;
 	ptr_can_frame_template->rx_header.DLC = 0;
@@ -576,7 +602,7 @@ void CanClearRxDataFrame(CanDataFrameInit *ptr_can_frame_template) {
 }
 
 void CanSendExtendedIdMessage(CAN_HandleTypeDef chosen_network,
-		CanDataFrameInit *ptr_can_frame_template, uint8_t FrameId, uint8_t DLC,
+		CanDataFrameInit *ptr_can_frame_template, uint32_t FrameId, uint8_t DLC,
 		uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
 		uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7)
 {
@@ -608,6 +634,7 @@ void CanSendExtendedIdMessage(CAN_HandleTypeDef chosen_network,
 
 /*My math mini library BEGIN*/
 
+
 int unParse2Bytes(uint8_t lowerByte, uint8_t higherByte)
 {
 	int cas = ((int)lowerByte + (int)higherByte * byteMaxValue);
@@ -632,19 +659,96 @@ GluedBytes MakeGluedBytes(uint8_t lowerByte, uint8_t higherByte)
 /*My math mini library END*/
 
 /*CAN COMMUNICATION SECTION BEGIN*/
+/*CAR STATES MODULES*/
+void StartCharging(CanDataFrameInit *canFrame)
+{
+	if (charging == false)
+	{
+		if (canFrame->rx_header.ExtId == 0x18FF50E5)
+		{
+			StopCanCommunication();
+			HAL_Delay(2);
+			CanSendNmt(hcan1, OPERATIONAL_STATE, bms.node_id,
+					&can_frame_template);
+		}
+	}
+		charging = canFrame->rx_header.ExtId == 0x18FF50E5;
+}
+
+void ChargingStateModule()
+{
+	if (charging == true)
+	{
+		CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8, 0x03,
+					0xE8, 0, 10, 0, 0, 0, 0);
+
+			CanClearRxDataFrame(&can_rx_frame_template);
+			HAL_Delay(1000);
+		if (error == true)
+		{
+			StopCanCommunication();
+		}
+	}
+}
+
+void DrivingStateModule()
+{
+	StopCanCommunication();
+	HAL_Delay(2);
+	StartCanCommunication();
+	while(driving && !error)
+	{
+		HandleHighSpeed();
+
+		HandleLowSpeed();
+	}
+	if(error)
+	{
+		StopCanCommunication();
+	}
+
+}
+
+void HandleHighSpeed()
+{
+	CanSaveReceivedData(CAN_HIGH_SPEED, &can_rx_frame_template);
+	UsbTransfer(&can_rx_frame_template);
+	CatchErrorOccuring(&can_rx_frame_template);
+	CanClearRxDataFrame(&can_frame_template);
+}
+
+void HandleLowSpeed()
+{
+	CanSaveReceivedData(CAN_LOW_SPEED, &can_rx_frame_template);
+	UsbTransfer(&can_rx_frame_template);
+	CatchErrorOccuring(&can_rx_frame_template);
+	CanClearRxDataFrame(&can_rx_frame_template);
+}
+
+/*Only optional to talk out with people*/
+void ParkingStateModule()
+{
+
+}
+
 /*CHARGING ACTIONS BEGIN*/
-bool ActUponCurrentAndVoltage(CanDataFrameInit *canFrame, int maxVoltage, int maxCurrent)
+void ActUponCurrentAndVoltage(CanDataFrameInit *canFrame, int maxVoltage, int maxCurrent)
 {
 	int voltage = unParse2Bytes(canFrame->rx_data[1], canFrame->rx_data[0]);
 	int current = unParse2Bytes(canFrame->rx_data[3], canFrame->rx_data[2]);
-	return (voltage<maxVoltage && current<maxCurrent);
+	error = ( (voltage<maxVoltage) && (current<maxCurrent) );
 }
 /*CHARGING ACTIONS END*/
 
 /*DRIVING ACTIONS BEGIN*/
-bool CatchErrorOccuring(CanDataFrameInit *canFrame)
+void CatchErrorOccuring(CanDataFrameInit *canFrame)
 {
-	return canFrame->rx_header.StdId == 0x69;
+	/* BMS Errors handling */
+	if( (canFrame->rx_header.StdId == 0x85) || (canFrame->rx_header.StdId == 0x90) || (canFrame->rx_header.StdId == 0x95) )
+	{
+		error = true;
+		StopCanCommunication();
+	}
 }
 
 /*DRIVING ACTIONS END*/
