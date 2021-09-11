@@ -759,6 +759,27 @@ void CatchErrorOccuring(CanDataFrameInit *canFrame)
 	}
 }
 
+void WarningHandler(CanDataFrameInit *canFrame)
+{
+	if(canFrame->rx_header.StdId == 0x55)
+	{
+		SendErrorFrame(canFrame->rx_data[1], canFrame->rx_data[2]);
+	}
+}
+
+void SendErrorFrame(uint8_t highCondition, uint8_t lowCondition)
+{
+	if( (highCondition >= 0x01) && (lowCondition>=0xD0) )
+	{
+		UsbTransferDataByte(0x56, 0x01, 0x01, 0, 0, 0, 0, 0, 0);
+	}
+	else
+	{
+		UsbTransferDataByte(0x56, 0x0, 0x0, 0, 0, 0, 0, 0, 0);
+	}
+}
+
+
 /*DRIVING ACTIONS END*/
 /*CAN COMMUNICATION SECTION END*/
 

@@ -157,13 +157,13 @@ int main(void)
 		CanSendPdo(hcan1, 0x185, 8, &can_frame_template, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F);
 		HAL_Delay(100);
 
-		CanSendPdo(hcan1, 0x18B, 8, &can_frame_template, 0, 0, 85, 0x0F, 0, 0, 0, 0);
+		CanSendPdo(hcan1, 0x18B, 8, &can_frame_template, 0, 0, 69, 0x0F, 0, 0, 0, 0);
 		HAL_Delay(100);
 
 		CanSendPdo(hcan1, 0x189, 8, &can_frame_template, 0xFF, 0, 0, 0, 0, 0, 0, 0);
 		HAL_Delay(100);
 
-//		ChargingStateModule();
+		ChargingStateModule();
 
     /* USER CODE END WHILE */
 

@@ -335,6 +335,8 @@ void CAN1_RX0_IRQHandler(void)
 
 	CatchErrorOccuring(&can_rx_frame_template);
 
+	WarningHandler(&can_rx_frame_template);
+
 
   /* USER CODE END CAN1_RX0_IRQn 1 */
 }
