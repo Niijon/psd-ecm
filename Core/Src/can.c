@@ -633,7 +633,12 @@ void CanSendExtendedIdMessage(CAN_HandleTypeDef chosen_network,
 }
 
 /*My math mini library BEGIN*/
-
+void testMath(int to_test)
+{
+	if(to_test == 3000){
+		CanSendPdo(hcan1, 0x69, 2, &can_frame_template, 6, 9, 0, 0, 0, 0, 0, 0);
+	}
+}
 
 int unParse2Bytes(uint8_t lowerByte, uint8_t higherByte)
 {
@@ -660,30 +665,27 @@ GluedBytes MakeGluedBytes(uint8_t lowerByte, uint8_t higherByte)
 
 /*CAN COMMUNICATION SECTION BEGIN*/
 /*CAR STATES MODULES*/
-void StartCharging(CanDataFrameInit *canFrame)
-{
-	if (charging == false)
-	{
-		if (canFrame->rx_header.ExtId == 0x18FF50E5)
-		{
-			StopCanCommunication();
-			HAL_Delay(2);
-			CanSendNmt(hcan1, OPERATIONAL_STATE, bms.node_id,
-					&can_frame_template);
-		}
-	}
-		charging = canFrame->rx_header.ExtId == 0x18FF50E5;
-}
+//void StartCharging(CanDataFrameInit *canFrame)
+//{
+//	if (charging == false)
+//	{
+//		if (canFrame->rx_header.ExtId == 0x18FF50E5)
+//		{
+//
+//		}
+//	}
+//		charging = canFrame->rx_header.ExtId == 0x18FF50E5;
+//}
 
 void ChargingStateModule()
 {
-	if (charging == true)
+	if (charging == true && error == false)
 	{
-		CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8, 0x03,
-					0xE8, 0, 10, 0, 0, 0, 0);
+		CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8,
+				0x03, 0xE8, 0, 10, 0, 0, 0, 0);
 
-			CanClearRxDataFrame(&can_rx_frame_template);
-			HAL_Delay(1000);
+		CanClearRxDataFrame(&can_rx_frame_template);
+		HAL_Delay(1000);
 		if (error == true)
 		{
 			StopCanCommunication();
@@ -736,7 +738,13 @@ void ActUponCurrentAndVoltage(CanDataFrameInit *canFrame, int maxVoltage, int ma
 {
 	int voltage = unParse2Bytes(canFrame->rx_data[1], canFrame->rx_data[0]);
 	int current = unParse2Bytes(canFrame->rx_data[3], canFrame->rx_data[2]);
-	error = ( (voltage<maxVoltage) && (current<maxCurrent) );
+	testMath(voltage);
+	error = ( (voltage>maxVoltage) || (current>maxCurrent) );
+}
+
+void CatchChargingErrorOccuring(CanDataFrameInit *canFrame)
+{
+	error = ( canFrame->rx_data[4] != 0 );
 }
 /*CHARGING ACTIONS END*/
 

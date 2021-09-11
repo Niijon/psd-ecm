@@ -327,9 +327,11 @@ void CAN1_RX0_IRQHandler(void)
 	 ************************************************************************************************/
 	CanSaveReceivedData(CAN_HIGH_SPEED, &can_rx_frame_template);
 	UsbTransfer(&can_rx_frame_template);
-	StartCharging(&can_rx_frame_template);
 	if (can_rx_frame_template.rx_header.ExtId == 0x18FF50E5)
+	{
 		ActUponCurrentAndVoltage(&can_rx_frame_template, 3000, 200);
+		CatchChargingErrorOccuring(&can_rx_frame_template);
+	}
 
 	CatchErrorOccuring(&can_rx_frame_template);
 
@@ -377,82 +379,6 @@ void EXTI9_5_IRQHandler(void)
 //
 //	CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id+1,
 //				&can_frame_template, 6, SDO_UPLOAD, 0x08, day_state, emcy_state, reverse_state, daylight_state, 0, 0);
-
-//
-
-	/* opto input 5 - Night Lights */
-	if (HAL_GPIO_ReadPin(OPTO_INPUT5_GPIO_Port, OPTO_INPUT5_Pin)
-			== GPIO_PIN_SET) {
-		CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-				&can_frame_template, 3, SDO_DOWNLOAD, 0x01, 1, 0, 0, 0, 0, 0);
-	} else if (HAL_GPIO_ReadPin(OPTO_INPUT5_GPIO_Port, OPTO_INPUT5_Pin)
-			== GPIO_PIN_RESET) {
-		CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-				&can_frame_template, 3, SDO_DOWNLOAD, 0x01, 0, 0, 0, 0, 0, 0);
-	}
-	HAL_Delay(20);
-//	} else {
-//		CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id
-//				&can_frame_template, 3, SDO_DOWNLOAD, 0x05, 0, 0, 0, 0, 0, 0);
-//	}
-
-	/* opto input 6 - RIGHT */
-	if (HAL_GPIO_ReadPin(OPTO_INPUT6_GPIO_Port, OPTO_INPUT6_Pin)
-			== GPIO_PIN_SET) {
-		CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-				&can_frame_template, 3, SDO_DOWNLOAD, 0x02, 1, 0, 0, 0, 0, 0);
-//				&can_frame_template, 5, SDO_DOWNLOAD, 0x06, 0, 0x06, 1, 0, 0, 0);
-
-//	} else if (HAL_GPIO_ReadPin(OPTO_INPUT6_GPIO_Port, OPTO_INPUT6_Pin)
-//			== GPIO_PIN_RESET) {
-//		CanSendSdo(CAN_LOW_SPEED, lights_controller.node_id,
-//				&can_frame_template, 3, SDO_DOWNLOAD, 0x06, 0, 0, 0, 0, 0, 0);
-	} else {
-		CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-				&can_frame_template, 3, SDO_DOWNLOAD, 0x02, 0, 0, 0, 0, 0, 0);
-//				&can_frame_template, 3, SDO_DOWNLOAD, 0x06, 0, 0x06, 1, 0, 0, 0);
-	}
-
-	HAL_Delay(20);
-
-	/* opto input 7 LEFT */
-	if (HAL_GPIO_ReadPin(OPTO_INPUT7_GPIO_Port, OPTO_INPUT7_Pin)
-				== GPIO_PIN_SET) {
-			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-					&can_frame_template, 3, SDO_DOWNLOAD, 0x03, 1, 0, 0, 0, 0, 0);
-
-		} else {
-			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-					&can_frame_template, 3, SDO_DOWNLOAD, 0x03, 0, 0, 0, 0, 0, 0);
-		}
-
-	HAL_Delay(20);
-
-	/* opto input 8 Emergency */
-	if (HAL_GPIO_ReadPin(OPTO_INPUT8_GPIO_Port, OPTO_INPUT8_Pin)
-					== GPIO_PIN_SET) {
-				CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-						&can_frame_template, 3, SDO_DOWNLOAD, 0x06, 1, 0, 0, 0, 0, 0);
-
-			} else {
-				CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-						&can_frame_template, 3, SDO_DOWNLOAD, 0x06, 0, 0, 0, 0, 0, 0);
-			}
-	HAL_Delay(20);
-
-	/* opto input 9 - reverse lights */
-	if (HAL_GPIO_ReadPin(OPTO_INPUT9_GPIO_Port, OPTO_INPUT9_Pin)
-						== GPIO_PIN_SET) {
-					CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-							&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 1, 0, 0, 0, 0, 0);
-
-				} else {
-					CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-							&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 0, 0, 0, 0, 0, 0);
-				}
-		HAL_Delay(20);
-
-
 
 //	OptoInputsRisingFalling(OPTO_INPUT7_GPIO_Port, OPTO_INPUT7_Pin, 0x07);
 	/* opto input 8 - day lights */

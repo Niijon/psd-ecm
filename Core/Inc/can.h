@@ -79,6 +79,7 @@ int unParse2Bytes(uint8_t lowerByte, uint8_t higherByte);
 /**/
 
 void CatchErrorOccuring(CanDataFrameInit *canFrame);
+void CatchChargingErrorOccuring(CanDataFrameInit *canFrame);
 
 extern CanDataFrameInit can_frame_template;
 extern CanDataFrameInit can_rx_frame_template;
