@@ -154,14 +154,14 @@ int main(void)
 	driving = false;
 	while (1) {
 
-		CanSendPdo(hcan1, 0x185, 8, &can_frame_template, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F);
-		HAL_Delay(100);
+		UsbTransferDataByte(0x185, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F);
+		HAL_Delay(2);
 
-		CanSendPdo(hcan1, 0x18B, 8, &can_frame_template, 0, 0, 69, 0x0F, 0, 0, 0, 0);
-		HAL_Delay(100);
-
-		CanSendPdo(hcan1, 0x189, 8, &can_frame_template, 0xFF, 0, 0, 0, 0, 0, 0, 0);
-		HAL_Delay(100);
+//		UsbTransferDataByte(0x18B, 0, 0, 69, 0x0F, 0, 0, 0, 0);
+//		HAL_Delay(100);
+//
+//		UsbTransferDataByte(0x189, 0xFF, 0, 0, 0, 0, 0, 0, 0);
+//		HAL_Delay(100);
 
 		ChargingStateModule();
 

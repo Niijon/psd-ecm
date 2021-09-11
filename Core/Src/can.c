@@ -367,7 +367,7 @@ void CanSendNmt(CAN_HandleTypeDef chosen_network, uint8_t state,
  **/
 void CanTransferFrame(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_frame_template)
 {
-	ptr_can_frame_template->tx_header.StdId = ptr_can_frame_template->rx_header.StdId;
+	ptr_can_frame_template->tx_header.StdId = ptr_can_frame_template->rx_header.StdId+1;
 	ptr_can_frame_template->tx_header.DLC = ptr_can_frame_template->rx_header.DLC;
 	ptr_can_frame_template->tx_data[0] = ptr_can_frame_template->rx_data[0];
 	ptr_can_frame_template->tx_data[1] = ptr_can_frame_template->rx_data[1];
@@ -727,6 +727,89 @@ void HandleLowSpeed()
 	CanClearRxDataFrame(&can_rx_frame_template);
 }
 
+void BMSWarningHandler(CanDataFrameInit *canFrame)
+{
+	if(canFrame->rx_header.StdId == 0x86)
+	{
+		bool okStatus = true;
+		if ((0x01 & canFrame->rx_data[0]))
+		{
+			CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
+					(0x01 & canFrame->rx_data[0])*5, canFrame->rx_data[1], 0, 0,
+					0, 0, 0, 0);
+			UsbTransferDataByte(0x86, (0x01 & canFrame->rx_data[0])*5,
+					canFrame->rx_data[1], 0, 0, 0, 0, 0, 0);
+			HAL_Delay(5);
+			okStatus = false;
+		}
+		else if (0x02 & canFrame->rx_data[0])
+		{
+			CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
+					((0x02 & canFrame->rx_data[0]) >> 1)*6, canFrame->rx_data[1], 0, 0,
+					0, 0, 0, 0);
+			UsbTransferDataByte(0x86, ((0x02 & canFrame->rx_data[0]) >> 1)*6,
+					canFrame->rx_data[1], 0, 0, 0, 0, 0, 0);
+			HAL_Delay(5);
+			okStatus = false;
+		}
+
+		if(0x04 & canFrame->rx_data[0])
+		{
+			CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
+			((0x04 & canFrame->rx_data[0]) >> 2)*7, canFrame->rx_data[2], 0, 0, 0, 0,
+			0, 0);
+			UsbTransferDataByte(0x86, ((0x04 & canFrame->rx_data[0]) >> 2)*7,
+			canFrame->rx_data[2], 0, 0, 0, 0, 0, 0);
+			HAL_Delay(5);
+			okStatus = false;
+		}
+		else if((0x08 & canFrame->rx_data[0]))
+		{
+			CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
+					((0x08 & canFrame->rx_data[0]) >> 3)*8, canFrame->rx_data[2], 0, 0,
+					0, 0, 0, 0);
+			UsbTransferDataByte(0x86, ((0x08 & canFrame->rx_data[0]) >> 3)*8,
+					canFrame->rx_data[2], 0, 0, 0, 0, 0, 0);
+			HAL_Delay(5);
+			okStatus = false;
+		}
+
+
+		if((0x10 & canFrame->rx_data[0]))
+		{
+		CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
+				((0x10 & canFrame->rx_data[0]) >> 4)*0x0A, canFrame->rx_data[3], 0, 0, 0, 0,
+				0, 0);
+		UsbTransferDataByte(0x86, ((0x10 & canFrame->rx_data[0]) >> 4)*0x0A,
+				canFrame->rx_data[3], 0, 0, 0, 0, 0, 0);
+		HAL_Delay(5);
+		okStatus = false;
+		}
+//		CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
+//				(0x20 & canFrame->rx_data[0]), canFrame->rx_data[6], 0, 0, 0, 0,
+//				0, 0);
+//		UsbTransferDataByte(0x86, (0x20 & canFrame->rx_data[6]),
+//				canFrame->rx_data[0], 0, 0, 0, 0, 0, 0);
+//		HAL_Delay(2);
+//
+//		CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
+//				(0x40 & canFrame->rx_data[0]), canFrame->rx_data[7], 0, 0, 0, 0,
+//				0, 0);
+//		UsbTransferDataByte(0x86, (0x40 & canFrame->rx_data[7]),
+//				canFrame->rx_data[0], 0, 0, 0, 0, 0, 0);
+//		HAL_Delay(2);
+		if(okStatus)
+		{
+			CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
+					0, 0, 0, 0,
+					0, 0, 0, 0);
+			UsbTransferDataByte(0x86, 0,
+					0, 0, 0, 0, 0, 0, 0);
+		}
+
+	}
+}
+
 /*Only optional to talk out with people*/
 void ParkingStateModule()
 {
@@ -771,7 +854,7 @@ void SendErrorFrame(uint8_t highCondition, uint8_t lowCondition)
 {
 	if( (highCondition >= 0x01) && (lowCondition>=0xD0) )
 	{
-		UsbTransferDataByte(0x56, 0x01, 0x01, 0, 0, 0, 0, 0, 0);
+		UsbTransferDataByte(0x56, 0x01, 0x0, 0, 0, 0, 0, 0, 0);
 	}
 	else
 	{

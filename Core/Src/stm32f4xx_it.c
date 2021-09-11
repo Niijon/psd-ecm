@@ -333,9 +333,13 @@ void CAN1_RX0_IRQHandler(void)
 		CatchChargingErrorOccuring(&can_rx_frame_template);
 	}
 
+//	CanTransferFrame(hcan1, &can_rx_frame_template);
+
 	CatchErrorOccuring(&can_rx_frame_template);
 
 	WarningHandler(&can_rx_frame_template);
+
+	BMSWarningHandler(&can_rx_frame_template);
 
 
   /* USER CODE END CAN1_RX0_IRQn 1 */

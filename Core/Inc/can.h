@@ -132,6 +132,7 @@ void MX_CAN2_Init(void);
 void ActUponCurrentAndVoltage(CanDataFrameInit *canFrame, int maxVoltage, int maxCurrent);
 void ChargingStateModule();
 void DrivingStateModule();
+void BMSWarningHandler(CanDataFrameInit *canFrame);
 /*Only optional to talk out with people*/
 void ParkingStateModule();
 void HandleHighSpeed();
