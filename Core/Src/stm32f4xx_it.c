@@ -341,6 +341,8 @@ void CAN1_RX0_IRQHandler(void)
 
 	BMSWarningHandler(&can_rx_frame_template);
 
+	ReverseManagement(&can_rx_frame_template);
+
 
   /* USER CODE END CAN1_RX0_IRQn 1 */
 }
@@ -416,12 +418,6 @@ void TIM1_UP_TIM10_IRQHandler(void)
 	/************************************************************************************************
 	 TIMER 10Hz INTERRUPT HANDLING
 	 ************************************************************************************************/
-//	CanSendSync(CAN_HIGH_SPEED, &can_frame_template);
-//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id, &can_frame_template);
-//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id, &can_frame_template);
-//	CanSendSync(CAN_LOW_SPEED, &can_frame_template);
-//	CanSendTpdo(CAN_LOW_SPEED, lights_controller.node_id, 2, 0x01,
-//			&can_frame_template);
 	HAL_GPIO_TogglePin(LED_D4_GPIO_Port, LED_D4_Pin);
 
 //	if( (charging == true) && (error == false) )

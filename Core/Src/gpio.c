@@ -244,40 +244,38 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		HAL_Delay(10);
 	}
 
-
-	if (GPIO_Pin == OPTO_INPUT9_Pin)
-	{
-		/* opto input 9 - reverse lights */
-		if (HAL_GPIO_ReadPin(OPTO_INPUT9_GPIO_Port, OPTO_INPUT9_Pin)
-				== GPIO_PIN_SET)
-		{
-			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-					&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 1, 0, 0, 0, 0,
-					0);
-
-		}
-		else
-		{
-			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-					&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 0, 0, 0, 0, 0,
-					0);
-		}
-	}
-
+	/*Charging state register*/
 	if (GPIO_Pin == OPTO_INPUT10_Pin)
 	{
 		if (HAL_GPIO_ReadPin(OPTO_INPUT10_GPIO_Port, OPTO_INPUT10_Pin)
 				== GPIO_PIN_SET)
 		{
-			StopCanCommunication();
-			HAL_Delay(2);
-			CanSendNmt(hcan1, OPERATIONAL_STATE, bms.node_id,
-					&can_frame_template);
 			charging = true;
+			UsbTransferDataByte(0x0C, 0x01, 0, 0, 0, 0, 0, 0, 0);
+			HAL_Delay(10);
 		}
 		else
 		{
 			charging = false;
+			UsbTransferDataByte(0x0C, 0x0, 0, 0, 0, 0, 0, 0, 0);
+			HAL_Delay(10);
+		}
+	}
+
+	if (GPIO_Pin == OPTO_INPUT11_Pin)
+		{
+		if (HAL_GPIO_ReadPin(OPTO_INPUT10_GPIO_Port, OPTO_INPUT11_Pin)
+				== GPIO_PIN_SET && !highVoltageActive) {
+			CanSendNmt(hcan1, OPERATIONAL_STATE, bms.node_id,
+					&can_frame_template);
+			highVoltageActive = true;
+			HAL_Delay(2);
+		}
+		else
+		{
+			CanSendNmt(hcan1, STOPPED_STATE, bms.node_id,
+					&can_frame_template);
+			highVoltageActive = true;
 		}
 	}
 }

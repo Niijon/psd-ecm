@@ -53,12 +53,12 @@ extern CAN_HandleTypeDef hcan2;
 
 extern bool error;
 extern bool charging;
-extern bool driving;
+extern bool highVoltageActive;
 
 /*******************************************************************************
  DECLARATIONS
  *******************************************************************************/
-typedef struct {
+typedef struct CanDataFrameInit{
 	uint8_t tx_data[8];
 	CAN_TxHeaderTypeDef tx_header;
 	CAN_RxHeaderTypeDef rx_header;
@@ -89,9 +89,7 @@ extern CanDataFrameInit can_rx_frame_template;
 
 /* can peripherial initialization */
 void CanInit(CAN_HandleTypeDef hcanx);
-void CanConfigFilter(CAN_HandleTypeDef hcanx, uint8_t can_filter_bank,
-		uint32_t can_filter_id_high, uint32_t can_filter_id_low,
-		uint32_t can_filter_mask_id_high, uint32_t can_filter_mask_id_low);
+void CanConfigFilter(CAN_HandleTypeDef hcanx, uint8_t can_filter_bank);
 
 void CanReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template);
 CanDataFrameInit CanSaveReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template);
@@ -138,6 +136,7 @@ void ParkingStateModule();
 void HandleHighSpeed();
 void HandleLowSpeed();
 void StartCharging();
+void ReverseManagement(CanDataFrameInit *canFrame);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -38,7 +38,7 @@ uint32_t TxMailbox;
 CanDataFrameInit can_rx_frame_template;
 bool error;
 bool charging;
-bool driving;
+bool highVoltageActive;
 uint32_t can_tx_mailbox;
 
 /* USER CODE END 0 */
@@ -73,7 +73,7 @@ void MX_CAN2_Init(void)
 {
 
   hcan2.Instance = CAN2;
-  hcan2.Init.Prescaler = 50;
+  hcan2.Init.Prescaler = 20;
   hcan2.Init.Mode = CAN_MODE_NORMAL;
   hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
   hcan2.Init.TimeSeg1 = CAN_BS1_13TQ;
@@ -279,20 +279,14 @@ CanDataFrameInit CanSaveReceivedData(CAN_HandleTypeDef chosen_network, CanDataFr
  * @param can_filter_mask_id_low: Low byte of CAN ID mask - IDs to be received
  *
  **/
-void CanConfigFilter(CAN_HandleTypeDef chosen_network, uint8_t can_filter_bank,
-		uint32_t can_filter_id_high, uint32_t can_filter_id_low,
-		uint32_t can_filter_mask_id_high, uint32_t can_filter_mask_id_low) {
+void CanConfigFilter(CAN_HandleTypeDef chosen_network, uint8_t can_filter_bank){
 	can_filter_template.FilterBank = can_filter_bank;
 	can_filter_template.FilterMode = CAN_FILTERMODE_IDMASK;
 	can_filter_template.FilterScale = CAN_FILTERSCALE_32BIT;
-//	can_filter_template.FilterIdHigh = 0x290 << 5; //can_filter_id_high; //18FF;			//0x321 << 5;
-//	can_filter_template.FilterIdLow = 0x00000000; //can_filter_id_low; //50E5;				//0x00000000;
 	can_filter_template.FilterIdHigh = 0x0000;
 	can_filter_template.FilterIdLow = 0x0000;
 	can_filter_template.FilterMaskIdHigh = 0x0000;
 	can_filter_template.FilterMaskIdLow = 0x0000;
-//	can_filter_template.FilterMaskIdHigh = 0x290 << 5;	//0x111 << 5;
-//	can_filter_template.FilterMaskIdLow = 0x00000000;
 	can_filter_template.FilterFIFOAssignment = CAN_RX_FIFO0;
 	can_filter_template.FilterActivation = ENABLE;
 	can_filter_template.SlaveStartFilterBank = 14;
@@ -681,6 +675,8 @@ void ChargingStateModule()
 {
 	if (charging == true && error == false)
 	{
+		UsbTransferDataByte(0x1C, 0x01, 0, 0, 0, 0, 0, 0, 0);
+		HAL_Delay(1);
 		CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8,
 				0x03, 0xE8, 0, 10, 0, 0, 0, 0);
 
@@ -691,122 +687,49 @@ void ChargingStateModule()
 			StopCanCommunication();
 		}
 	}
-}
-
-void DrivingStateModule()
-{
-	StopCanCommunication();
-	HAL_Delay(2);
-	StartCanCommunication();
-	while(driving && !error)
+	else if(charging == false)
 	{
-		HandleHighSpeed();
-
-		HandleLowSpeed();
+		UsbTransferDataByte(0x1C, 0x0, 0, 0, 0, 0, 0, 0, 0);
+		HAL_Delay(1);
 	}
-	if(error)
+}
+
+
+void ReverseManagement(CanDataFrameInit *canFrame)
+{
+	if(canFrame->rx_header.StdId == 0x90)
 	{
-		StopCanCommunication();
+		if(canFrame->rx_data[0] == 0x4)
+		{
+			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+					&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 1, 0, 0, 0, 0,
+					0);
+		}
+
+		else if (canFrame->rx_data[0] == 0x3)
+		{
+			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+					&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 0, 0, 0, 0, 0,
+					0);
+		}
+		else if(canFrame->rx_data[0] == 0x0)
+		{
+			error = true;
+		}
 	}
-
-}
-
-void HandleHighSpeed()
-{
-	CanSaveReceivedData(CAN_HIGH_SPEED, &can_rx_frame_template);
-	UsbTransfer(&can_rx_frame_template);
-	CatchErrorOccuring(&can_rx_frame_template);
-	CanClearRxDataFrame(&can_frame_template);
-}
-
-void HandleLowSpeed()
-{
-	CanSaveReceivedData(CAN_LOW_SPEED, &can_rx_frame_template);
-	UsbTransfer(&can_rx_frame_template);
-	CatchErrorOccuring(&can_rx_frame_template);
-	CanClearRxDataFrame(&can_rx_frame_template);
 }
 
 void BMSWarningHandler(CanDataFrameInit *canFrame)
 {
 	if(canFrame->rx_header.StdId == 0x86)
 	{
-		bool okStatus = true;
-		if ((0x01 & canFrame->rx_data[0]))
-		{
-			CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
-					(0x01 & canFrame->rx_data[0])*5, canFrame->rx_data[1], 0, 0,
-					0, 0, 0, 0);
-			UsbTransferDataByte(0x86, (0x01 & canFrame->rx_data[0])*5,
-					canFrame->rx_data[1], 0, 0, 0, 0, 0, 0);
-			HAL_Delay(5);
-			okStatus = false;
-		}
-		else if (0x02 & canFrame->rx_data[0])
-		{
-			CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
-					((0x02 & canFrame->rx_data[0]) >> 1)*6, canFrame->rx_data[1], 0, 0,
-					0, 0, 0, 0);
-			UsbTransferDataByte(0x86, ((0x02 & canFrame->rx_data[0]) >> 1)*6,
-					canFrame->rx_data[1], 0, 0, 0, 0, 0, 0);
-			HAL_Delay(5);
-			okStatus = false;
-		}
-
-		if(0x04 & canFrame->rx_data[0])
-		{
-			CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
-			((0x04 & canFrame->rx_data[0]) >> 2)*7, canFrame->rx_data[2], 0, 0, 0, 0,
-			0, 0);
-			UsbTransferDataByte(0x86, ((0x04 & canFrame->rx_data[0]) >> 2)*7,
-			canFrame->rx_data[2], 0, 0, 0, 0, 0, 0);
-			HAL_Delay(5);
-			okStatus = false;
-		}
-		else if((0x08 & canFrame->rx_data[0]))
-		{
-			CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
-					((0x08 & canFrame->rx_data[0]) >> 3)*8, canFrame->rx_data[2], 0, 0,
-					0, 0, 0, 0);
-			UsbTransferDataByte(0x86, ((0x08 & canFrame->rx_data[0]) >> 3)*8,
-					canFrame->rx_data[2], 0, 0, 0, 0, 0, 0);
-			HAL_Delay(5);
-			okStatus = false;
-		}
-
-
-		if((0x10 & canFrame->rx_data[0]))
-		{
-		CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
-				((0x10 & canFrame->rx_data[0]) >> 4)*0x0A, canFrame->rx_data[3], 0, 0, 0, 0,
-				0, 0);
-		UsbTransferDataByte(0x86, ((0x10 & canFrame->rx_data[0]) >> 4)*0x0A,
-				canFrame->rx_data[3], 0, 0, 0, 0, 0, 0);
-		HAL_Delay(5);
-		okStatus = false;
-		}
-//		CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
-//				(0x20 & canFrame->rx_data[0]), canFrame->rx_data[6], 0, 0, 0, 0,
-//				0, 0);
-//		UsbTransferDataByte(0x86, (0x20 & canFrame->rx_data[6]),
-//				canFrame->rx_data[0], 0, 0, 0, 0, 0, 0);
-//		HAL_Delay(2);
-//
-//		CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
-//				(0x40 & canFrame->rx_data[0]), canFrame->rx_data[7], 0, 0, 0, 0,
-//				0, 0);
-//		UsbTransferDataByte(0x86, (0x40 & canFrame->rx_data[7]),
-//				canFrame->rx_data[0], 0, 0, 0, 0, 0, 0);
-//		HAL_Delay(2);
-		if(okStatus)
-		{
-			CanSendPdo(hcan1, 0x86, 8, &can_frame_template,
-					0, 0, 0, 0,
-					0, 0, 0, 0);
-			UsbTransferDataByte(0x86, 0,
-					0, 0, 0, 0, 0, 0, 0);
-		}
-
+		CanSendPdo(hcan1, 0x87, 8, &can_frame_template,
+				0x01 & canFrame->rx_data[0],
+				(0x02 & canFrame->rx_data[0]) >> 1,
+				(0x04 & canFrame->rx_data[0]) >> 2,
+				(0x08 & canFrame->rx_data[0]) >> 3,
+				(0x10 & canFrame->rx_data[0]) >> 4,
+				0, 0, 0);
 	}
 }
 
@@ -835,7 +758,7 @@ void CatchChargingErrorOccuring(CanDataFrameInit *canFrame)
 void CatchErrorOccuring(CanDataFrameInit *canFrame)
 {
 	/* BMS Errors handling */
-	if( (canFrame->rx_header.StdId == 0x85) || (canFrame->rx_header.StdId == 0x90) || (canFrame->rx_header.StdId == 0x95) )
+	if( (canFrame->rx_header.StdId == 0x85) )
 	{
 		error = true;
 		StopCanCommunication();
