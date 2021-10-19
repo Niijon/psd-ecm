@@ -181,10 +181,10 @@ int main(void)
 
 //		SendAllFramesForDashboard();
 		sendZeroes();
-		UsbTransferDataByte(0x581, 0, 2, 1, 0, 0, 0, 0, 0);
+//		UsbTransferDataByte(0x581, 0, 2, 1, 0, 0, 0, 0, 0);
 		HAL_Delay(10);
 		sendZeroes();
-		UsbTransferDataByte(0x581, 0, 2, 0, 0, 0, 0, 0, 0);
+//		UsbTransferDataByte(0x581, 0, 2, 0, 0, 0, 0, 0, 0);
 		HAL_Delay(100);
 		//ChargingStateModule();
 

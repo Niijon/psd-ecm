@@ -173,12 +173,14 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
 					&can_frame_template, 3, SDO_DOWNLOAD, 0x01, 1, 0, 0, 0, 0,
 					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x01, 1, 0, 0, 0, 0, 0, 0);
 		}
 		else
 		{
 			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
 					&can_frame_template, 3, SDO_DOWNLOAD, 0x01, 0, 0, 0, 0, 0,
 					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x01, 0, 0, 0, 0, 0, 0, 0);
 		}
 		HAL_Delay(10);
 	}
@@ -192,12 +194,14 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
 					&can_frame_template, 3, SDO_DOWNLOAD, 0x02, 1, 0, 0, 0, 0,
 					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x02, 1, 0, 0, 0, 0, 0, 0);
 		}
 		else
 		{
 			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
 					&can_frame_template, 3, SDO_DOWNLOAD, 0x02, 0, 0, 0, 0, 0,
 					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x02, 0, 0, 0, 0, 0, 0, 0);
 		}
 
 		HAL_Delay(10);
@@ -212,6 +216,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
 					&can_frame_template, 3, SDO_DOWNLOAD, 0x03, 1, 0, 0, 0, 0,
 					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x03, 1, 0, 0, 0, 0, 0, 0);
 
 		}
 		else
@@ -219,6 +224,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
 					&can_frame_template, 3, SDO_DOWNLOAD, 0x03, 0, 0, 0, 0, 0,
 					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x03, 0, 0, 0, 0, 0, 0, 0);
 		}
 
 		HAL_Delay(10);
@@ -233,6 +239,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
 					&can_frame_template, 3, SDO_DOWNLOAD, 0x06, 1, 0, 0, 0, 0,
 					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x06, 1, 0, 0, 0, 0, 0, 0);
 
 		}
 		else
@@ -240,6 +247,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
 					&can_frame_template, 3, SDO_DOWNLOAD, 0x06, 0, 0, 0, 0, 0,
 					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x06, 0, 0, 0, 0, 0, 0, 0);
 		}
 		HAL_Delay(10);
 	}

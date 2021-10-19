@@ -298,7 +298,7 @@ void EXTI4_IRQHandler(void)
 void CAN1_TX_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN1_TX_IRQn 0 */
-
+	UsbTransfer(&can_frame_template);
   /* USER CODE END CAN1_TX_IRQn 0 */
   HAL_CAN_IRQHandler(&hcan1);
   /* USER CODE BEGIN CAN1_TX_IRQn 1 */
@@ -306,7 +306,7 @@ void CAN1_TX_IRQHandler(void)
 	/************************************************************************************************
 	 CAN_HIGH_SPEED TX INTERRUPT HANDLING
 	 ************************************************************************************************/
-	UsbTransfer(&can_frame_template);
+
 
   /* USER CODE END CAN1_TX_IRQn 1 */
 }
