@@ -318,7 +318,6 @@ void CanSendSync(CAN_HandleTypeDef chosen_network,
 	}
 	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
 	}
-	CanClearTxDataFrame(ptr_can_frame_template);
 }
 
 /**
@@ -347,7 +346,6 @@ void CanSendNmt(CAN_HandleTypeDef chosen_network, uint8_t state,
 	}
 	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
 	}
-	CanClearTxDataFrame(ptr_can_frame_template);
 }
 
 /**
@@ -380,7 +378,6 @@ void CanTransferFrame(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_ca
 
 	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
 	}
-	CanClearTxDataFrame(ptr_can_frame_template);
 }
 
 void CanSendPdo(CAN_HandleTypeDef chosen_network, uint32_t frame_pdo_id,
@@ -409,9 +406,6 @@ void CanSendPdo(CAN_HandleTypeDef chosen_network, uint32_t frame_pdo_id,
 
 	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
 	}
-
-	CanClearTxDataFrame(ptr_can_frame_template);
-
 }
 
 CanDataFrameInit CanMakeFrameWithValue(CanDataFrameInit *CanFrame, uint8_t frameId, uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7)
@@ -466,9 +460,6 @@ void CanSendSdo(CAN_HandleTypeDef chosen_network, uint32_t frame_sdo_id,
 
 	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
 	}
-
-	CanClearTxDataFrame(ptr_can_frame_template);
-
 }
 
 void StartCanCommunication()
@@ -622,8 +613,6 @@ void CanSendExtendedIdMessage(CAN_HandleTypeDef chosen_network,
 
 	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
 	}
-
-	CanClearTxDataFrame(ptr_can_frame_template);
 }
 
 /*My math mini library BEGIN*/
