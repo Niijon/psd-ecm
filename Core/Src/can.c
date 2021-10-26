@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -36,7 +36,9 @@ uint8_t TxData[8];
 uint8_t count = 0;
 uint32_t TxMailbox;
 CanDataFrameInit can_rx_frame_template;
-
+bool error;
+bool charging;
+bool highVoltageActive;
 uint32_t can_tx_mailbox;
 
 /* USER CODE END 0 */
@@ -249,13 +251,22 @@ void CanInit(CAN_HandleTypeDef chosen_network) {
  * @param chosen_network
  *
  **/
-void CanSaveReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template) {
+void CanReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template) {
 	if (HAL_CAN_GetRxMessage(&chosen_network, CAN_RX_FIFO0, &ptr_can_rx_frame_template->rx_header,
 			ptr_can_rx_frame_template->rx_data) != HAL_OK) {
 		/* Reception Error */
 		Error_Handler();
 	}
-//	CanClearRxDataFrame(ptr_can_rx_frame_template);
+	CanClearRxDataFrame(ptr_can_rx_frame_template);
+}
+
+CanDataFrameInit CanSaveReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_rx_frame_template) {
+	if (HAL_CAN_GetRxMessage(&chosen_network, CAN_RX_FIFO0, &ptr_can_rx_frame_template->rx_header,
+			ptr_can_rx_frame_template->rx_data) != HAL_OK) {
+		/* Reception Error */
+		Error_Handler();
+	}
+	return *ptr_can_rx_frame_template;
 }
 
 /**
@@ -268,20 +279,14 @@ void CanSaveReceivedData(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr
  * @param can_filter_mask_id_low: Low byte of CAN ID mask - IDs to be received
  *
  **/
-void CanConfigFilter(CAN_HandleTypeDef chosen_network, uint8_t can_filter_bank,
-		uint32_t can_filter_id_high, uint32_t can_filter_id_low,
-		uint32_t can_filter_mask_id_high, uint32_t can_filter_mask_id_low) {
+void CanConfigFilter(CAN_HandleTypeDef chosen_network, uint8_t can_filter_bank){
 	can_filter_template.FilterBank = can_filter_bank;
 	can_filter_template.FilterMode = CAN_FILTERMODE_IDMASK;
 	can_filter_template.FilterScale = CAN_FILTERSCALE_32BIT;
-//	can_filter_template.FilterIdHigh = 0x290 << 5; //can_filter_id_high; //18FF;			//0x321 << 5;
-//	can_filter_template.FilterIdLow = 0x00000000; //can_filter_id_low; //50E5;				//0x00000000;
 	can_filter_template.FilterIdHigh = 0x0000;
 	can_filter_template.FilterIdLow = 0x0000;
 	can_filter_template.FilterMaskIdHigh = 0x0000;
 	can_filter_template.FilterMaskIdLow = 0x0000;
-//	can_filter_template.FilterMaskIdHigh = 0x290 << 5;	//0x111 << 5;
-//	can_filter_template.FilterMaskIdLow = 0x00000000;
 	can_filter_template.FilterFIFOAssignment = CAN_RX_FIFO0;
 	can_filter_template.FilterActivation = ENABLE;
 	can_filter_template.SlaveStartFilterBank = 14;
@@ -313,7 +318,6 @@ void CanSendSync(CAN_HandleTypeDef chosen_network,
 	}
 	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
 	}
-	CanClearTxDataFrame(ptr_can_frame_template);
 }
 
 /**
@@ -342,7 +346,6 @@ void CanSendNmt(CAN_HandleTypeDef chosen_network, uint8_t state,
 	}
 	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
 	}
-	CanClearTxDataFrame(ptr_can_frame_template);
 }
 
 /**
@@ -354,7 +357,30 @@ void CanSendNmt(CAN_HandleTypeDef chosen_network, uint8_t state,
  * @param *can_frame_template: pointer to a structure containing basic frame parameters
  *
  **/
-void CanSendPdo(CAN_HandleTypeDef chosen_network, uint8_t frame_pdo_id,
+void CanTransferFrame(CAN_HandleTypeDef chosen_network, CanDataFrameInit *ptr_can_frame_template)
+{
+	ptr_can_frame_template->tx_header.StdId = ptr_can_frame_template->rx_header.StdId+1;
+	ptr_can_frame_template->tx_header.DLC = ptr_can_frame_template->rx_header.DLC;
+	ptr_can_frame_template->tx_data[0] = ptr_can_frame_template->rx_data[0];
+	ptr_can_frame_template->tx_data[1] = ptr_can_frame_template->rx_data[1];
+	ptr_can_frame_template->tx_data[2] = ptr_can_frame_template->rx_data[2];
+	ptr_can_frame_template->tx_data[3] = ptr_can_frame_template->rx_data[3];
+	ptr_can_frame_template->tx_data[4] = ptr_can_frame_template->rx_data[4];
+	ptr_can_frame_template->tx_data[5] = ptr_can_frame_template->rx_data[5];
+	ptr_can_frame_template->tx_data[6] = ptr_can_frame_template->rx_data[6];
+	ptr_can_frame_template->tx_data[7] = ptr_can_frame_template->rx_data[7];
+
+	if (HAL_CAN_AddTxMessage(&chosen_network,
+			&ptr_can_frame_template->tx_header, ptr_can_frame_template->tx_data,
+			&can_tx_mailbox) != HAL_OK) {
+		Error_Handler();
+	}
+
+	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
+	}
+}
+
+void CanSendPdo(CAN_HandleTypeDef chosen_network, uint32_t frame_pdo_id,
 		uint8_t number_of_bytes, CanDataFrameInit *ptr_can_frame_template,
 		uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
 		uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7) {
@@ -380,9 +406,23 @@ void CanSendPdo(CAN_HandleTypeDef chosen_network, uint8_t frame_pdo_id,
 
 	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
 	}
+}
 
-	CanClearTxDataFrame(ptr_can_frame_template);
-
+CanDataFrameInit CanMakeFrameWithValue(CanDataFrameInit *CanFrame, uint8_t frameId, uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7)
+{
+	CanFrame->rx_header.StdId = frameId;
+	CanFrame->rx_header.RTR = CAN_RTR_DATA;
+	CanFrame->rx_header.IDE = CAN_ID_STD;
+	CanFrame->rx_header.DLC = 8;
+	CanFrame->rx_data[0] = byte0;
+	CanFrame->rx_data[1] = byte1;
+	CanFrame->rx_data[2] = byte2;
+	CanFrame->rx_data[3] = byte3;
+	CanFrame->rx_data[4] = byte4;
+	CanFrame->rx_data[5] = byte5;
+	CanFrame->rx_data[6] = byte6;
+	CanFrame->rx_data[7] = byte7;
+	return *CanFrame;
 }
 
 /**
@@ -394,7 +434,7 @@ void CanSendPdo(CAN_HandleTypeDef chosen_network, uint8_t frame_pdo_id,
  * @param *ptr_can_frame_template: pointer to a structure containing basic frame parameters
  *
  **/
-void CanSendSdo(CAN_HandleTypeDef chosen_network, uint8_t frame_sdo_id,
+void CanSendSdo(CAN_HandleTypeDef chosen_network, uint32_t frame_sdo_id,
 		CanDataFrameInit *ptr_can_frame_template, uint8_t number_of_bytes,
 		uint8_t command_byte, uint8_t byte0, uint8_t byte1, uint8_t byte2,
 		uint8_t byte3, uint8_t byte4, uint8_t byte5, uint8_t byte6) {
@@ -420,9 +460,62 @@ void CanSendSdo(CAN_HandleTypeDef chosen_network, uint8_t frame_sdo_id,
 
 	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
 	}
+}
 
-	CanClearTxDataFrame(ptr_can_frame_template);
+void StartCanCommunication()
+{
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
+		&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+}
 
+void StopCanCommunication()
+{
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, bms.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_1.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_2.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_1.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_2.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_3.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, lights_controller.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
+	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, dashboard.node_id,
+			&can_frame_template);
+	HAL_Delay(1);
 }
 
 /**
@@ -433,8 +526,8 @@ void CanSendSdo(CAN_HandleTypeDef chosen_network, uint8_t frame_sdo_id,
  *
  * TODO(szymon): adaptacja do wersji programu ze wskaznikiem na strukture ramki
  **/
-void CanTransfer(CAN_HandleTypeDef hcanx, uint32_t sender_id,
-		uint32_t receiver_id) {
+/*
+void CanTransfer(CAN_HandleTypeDef hcanx, CanDataFrameInit *canFrame, uint32_t sender_id) {
 	if ((can_rx_header.StdId == sender_id)
 			&& (can_rx_header.RTR == CAN_RTR_DATA)
 			&& (can_rx_header.IDE == CAN_ID_STD)) {
@@ -444,13 +537,14 @@ void CanTransfer(CAN_HandleTypeDef hcanx, uint32_t sender_id,
 	} else {
 		HAL_GPIO_TogglePin(LED_D6_GPIO_Port, LED_D6_Pin);
 	}
+	canFrame->tx_header.DLC = canFrame->rx_header.DLC;
 
-	if (HAL_CAN_AddTxMessage(&hcanx, &can_rx_frame_template.tx_header,
-			can_rx_frame_template.tx_data, &can_tx_mailbox) != HAL_OK) {
+	if (HAL_CAN_AddTxMessage(&hcanx, canFrame->tx_header,
+			canFrame->rx_data, &can_tx_mailbox) != HAL_OK) {
 		Error_Handler();
 	}
 }
-
+*/
 /**
  * @brief: data sent over usb is not correctly shown when structure is not cleared
  *         after every message sent. Assigning zeros has no influence on the network
@@ -477,6 +571,7 @@ void CanClearTxDataFrame(CanDataFrameInit *ptr_can_frame_template) {
 
 void CanClearRxDataFrame(CanDataFrameInit *ptr_can_frame_template) {
 	ptr_can_frame_template->rx_header.StdId = 0x00;
+	ptr_can_frame_template->rx_header.ExtId = 0x00;
 	ptr_can_frame_template->rx_header.RTR = CAN_RTR_DATA;
 	ptr_can_frame_template->rx_header.IDE = CAN_ID_STD;
 	ptr_can_frame_template->rx_header.DLC = 0;
@@ -491,8 +586,197 @@ void CanClearRxDataFrame(CanDataFrameInit *ptr_can_frame_template) {
 	ptr_can_frame_template->rx_data[7] = 0x0;
 }
 
+void CanSendExtendedIdMessage(CAN_HandleTypeDef chosen_network,
+		CanDataFrameInit *ptr_can_frame_template, uint32_t FrameId, uint8_t DLC,
+		uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3,
+		uint8_t byte4, uint8_t byte5, uint8_t byte6, uint8_t byte7)
+{
+	ptr_can_frame_template->tx_header.ExtId = FrameId;
+	ptr_can_frame_template->tx_header.RTR = CAN_RTR_DATA;
+	ptr_can_frame_template->tx_header.IDE = CAN_ID_EXT;
+	ptr_can_frame_template->tx_header.DLC = DLC;
+	ptr_can_frame_template->tx_header.TransmitGlobalTime = DISABLE;
+	ptr_can_frame_template->tx_data[0] = byte0;
+	ptr_can_frame_template->tx_data[1] = byte1;
+	ptr_can_frame_template->tx_data[2] = byte2;
+	ptr_can_frame_template->tx_data[3] = byte3;
+	ptr_can_frame_template->tx_data[4] = byte4;
+	ptr_can_frame_template->tx_data[5] = byte5;
+	ptr_can_frame_template->tx_data[6] = byte6;
+	ptr_can_frame_template->tx_data[7] = byte7;
+
+	if (HAL_CAN_AddTxMessage(&chosen_network,
+		&ptr_can_frame_template->tx_header, ptr_can_frame_template->tx_data,
+		&can_tx_mailbox) != HAL_OK) {
+	Error_Handler();
+	}
+
+	while (HAL_CAN_GetTxMailboxesFreeLevel(&chosen_network) != 3) {
+	}
+}
+
+/*My math mini library BEGIN*/
+void testMath(int to_test)
+{
+	if(to_test == 3000){
+		CanSendPdo(hcan1, 0x69, 2, &can_frame_template, 6, 9, 0, 0, 0, 0, 0, 0);
+	}
+}
+
+int unParse2Bytes(uint8_t lowerByte, uint8_t higherByte)
+{
+	int cas = ((int)lowerByte + (int)higherByte * byteMaxValue);
+	return cas;
+}
+
+GluedBytes Parse2Bytes(int toParse)
+{
+	GluedBytes parsed16;
+	parsed16.lowerByte = toParse % byteMaxValue;
+	parsed16.higherByte = (toParse / byteMaxValue) % byteMaxValue;
+	return parsed16;
+}
+
+GluedBytes MakeGluedBytes(uint8_t lowerByte, uint8_t higherByte)
+{
+	GluedBytes bytes;
+	bytes.lowerByte = lowerByte;
+	bytes.higherByte = higherByte;
+	return bytes;
+}
+/*My math mini library END*/
+
+/*CAN COMMUNICATION SECTION BEGIN*/
+/*CAR STATES MODULES*/
+//void StartCharging(CanDataFrameInit *canFrame)
+//{
+//	if (charging == false)
+//	{
+//		if (canFrame->rx_header.ExtId == 0x18FF50E5)
+//		{
+//
+//		}
+//	}
+//		charging = canFrame->rx_header.ExtId == 0x18FF50E5;
+//}
+
+void ChargingStateModule()
+{
+	if (charging == true && error == false)
+	{
+		UsbTransferDataByte(0x1C, 0x01, 0, 0, 0, 0, 0, 0, 0);
+		HAL_Delay(1);
+		CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8,
+				0x03, 0xE8, 0, 10, 0, 0, 0, 0);
+
+		CanClearRxDataFrame(&can_rx_frame_template);
+		HAL_Delay(1000);
+		if (error == true)
+		{
+			StopCanCommunication();
+		}
+	}
+	else if(charging == false)
+	{
+		UsbTransferDataByte(0x1C, 0x0, 0, 0, 0, 0, 0, 0, 0);
+		HAL_Delay(1);
+	}
+}
 
 
+void ReverseManagement(CanDataFrameInit *canFrame)
+{
+	if(canFrame->rx_header.StdId == 0x90)
+	{
+		if(canFrame->rx_data[0] == 0x4)
+		{
+			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+					&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 1, 0, 0, 0, 0,
+					0);
+		}
+
+		else if (canFrame->rx_data[0] == 0x3)
+		{
+			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+					&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 0, 0, 0, 0, 0,
+					0);
+		}
+		else if(canFrame->rx_data[0] == 0x0)
+		{
+			error = true;
+		}
+	}
+}
+
+void BMSWarningHandler(CanDataFrameInit *canFrame)
+{
+	if(canFrame->rx_header.StdId == 0x86)
+	{
+		CanSendPdo(hcan1, 0x87, 8, &can_frame_template,
+				0x01 & canFrame->rx_data[0],
+				(0x02 & canFrame->rx_data[0]) >> 1,
+				(0x04 & canFrame->rx_data[0]) >> 2,
+				(0x08 & canFrame->rx_data[0]) >> 3,
+				(0x10 & canFrame->rx_data[0]) >> 4,
+				0, 0, 0);
+	}
+}
+
+/*Only optional to talk out with people*/
+void ParkingStateModule()
+{
+
+}
+
+/*CHARGING ACTIONS BEGIN*/
+void ActUponCurrentAndVoltage(CanDataFrameInit *canFrame, int maxVoltage, int maxCurrent)
+{
+	int voltage = unParse2Bytes(canFrame->rx_data[1], canFrame->rx_data[0]);
+	int current = unParse2Bytes(canFrame->rx_data[3], canFrame->rx_data[2]);
+	testMath(voltage);
+	error = ( (voltage>maxVoltage) || (current>maxCurrent) );
+}
+
+void CatchChargingErrorOccuring(CanDataFrameInit *canFrame)
+{
+	error = ( canFrame->rx_data[4] != 0 );
+}
+/*CHARGING ACTIONS END*/
+
+/*DRIVING ACTIONS BEGIN*/
+void CatchErrorOccuring(CanDataFrameInit *canFrame)
+{
+	/* BMS Errors handling */
+	if( (canFrame->rx_header.StdId == 0x85) )
+	{
+		error = true;
+		StopCanCommunication();
+	}
+}
+
+void WarningHandler(CanDataFrameInit *canFrame)
+{
+	if(canFrame->rx_header.StdId == 0x55)
+	{
+		SendErrorFrame(canFrame->rx_data[1], canFrame->rx_data[2]);
+	}
+}
+
+void SendErrorFrame(uint8_t highCondition, uint8_t lowCondition)
+{
+	if( (highCondition >= 0x01) && (lowCondition>=0xD0) )
+	{
+		UsbTransferDataByte(0x56, 0x01, 0x0, 0, 0, 0, 0, 0, 0);
+	}
+	else
+	{
+		UsbTransferDataByte(0x56, 0x0, 0x0, 0, 0, 0, 0, 0, 0);
+	}
+}
+
+
+/*DRIVING ACTIONS END*/
+/*CAN COMMUNICATION SECTION END*/
 
 /* USER CODE END 1 */
 

@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -65,9 +65,11 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(CAN2_RS_GPIO_Port, CAN2_RS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PEPin PEPin PEPin PEPin
+                           PEPin PEPin PEPin PEPin
                            PEPin PEPin */
   GPIO_InitStruct.Pin = OPTO_INPUT2_Pin|OPTO_INPUT3_Pin|OPTO_INPUT4_Pin|OPTO_INPUT5_Pin
-                          |OPTO_INPUT6_Pin|OPTO_INPUT1_Pin;
+                          |OPTO_INPUT6_Pin|OPTO_INPUT7_Pin|OPTO_INPUT8_Pin|OPTO_INPUT9_Pin
+                          |OPTO_INPUT10_Pin|OPTO_INPUT1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
@@ -80,11 +82,9 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PEPin PEPin PEPin PEPin
-                           PEPin PEPin PEPin PEPin
                            PEPin */
-  GPIO_InitStruct.Pin = OPTO_INPUT15_Pin|OPTO_INPUT14_Pin|OPTO_INPUT13_Pin|OPTO_INPUT12_Pin
-                          |OPTO_INPUT11_Pin|OPTO_INPUT10_Pin|OPTO_INPUT9_Pin|OPTO_INPUT8_Pin
-                          |OPTO_INPUT7_Pin;
+  GPIO_InitStruct.Pin = OPTO_INPUT11_Pin|OPTO_INPUT12_Pin|OPTO_INPUT13_Pin|OPTO_INPUT14_Pin
+                          |OPTO_INPUT15_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
@@ -159,6 +159,133 @@ void MX_GPIO_Init(void)
  */
 void OutputPowerRelay(){
 
+}
+
+/*Lights management*/
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if (GPIO_Pin == OPTO_INPUT5_Pin)
+	{
+		/* opto input 5 - Night Lights */
+		if (HAL_GPIO_ReadPin(OPTO_INPUT5_GPIO_Port, OPTO_INPUT5_Pin)
+				== GPIO_PIN_SET)
+		{
+			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+					&can_frame_template, 3, SDO_DOWNLOAD, 0x01, 1, 0, 0, 0, 0,
+					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x01, 1, 0, 0, 0, 0, 0, 0);
+		}
+		else
+		{
+			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+					&can_frame_template, 3, SDO_DOWNLOAD, 0x01, 0, 0, 0, 0, 0,
+					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x01, 0, 0, 0, 0, 0, 0, 0);
+		}
+		HAL_Delay(10);
+	}
+
+	if (GPIO_Pin == OPTO_INPUT6_Pin)
+	{
+		/* opto input 6 - RIGHT */
+		if (HAL_GPIO_ReadPin(OPTO_INPUT6_GPIO_Port, OPTO_INPUT6_Pin)
+				== GPIO_PIN_SET)
+		{
+			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+					&can_frame_template, 3, SDO_DOWNLOAD, 0x02, 1, 0, 0, 0, 0,
+					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x02, 1, 0, 0, 0, 0, 0, 0);
+		}
+		else
+		{
+			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+					&can_frame_template, 3, SDO_DOWNLOAD, 0x02, 0, 0, 0, 0, 0,
+					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x02, 0, 0, 0, 0, 0, 0, 0);
+		}
+
+		HAL_Delay(10);
+	}
+
+	if (GPIO_Pin == OPTO_INPUT7_Pin)
+	{
+		/* opto input 7 LEFT */
+		if (HAL_GPIO_ReadPin(OPTO_INPUT7_GPIO_Port, OPTO_INPUT7_Pin)
+				== GPIO_PIN_SET)
+		{
+			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+					&can_frame_template, 3, SDO_DOWNLOAD, 0x03, 1, 0, 0, 0, 0,
+					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x03, 1, 0, 0, 0, 0, 0, 0);
+
+		}
+		else
+		{
+			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+					&can_frame_template, 3, SDO_DOWNLOAD, 0x03, 0, 0, 0, 0, 0,
+					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x03, 0, 0, 0, 0, 0, 0, 0);
+		}
+
+		HAL_Delay(10);
+	}
+
+	if (GPIO_Pin == OPTO_INPUT8_Pin)
+	{
+		/* opto input 8 Emergency */
+		if (HAL_GPIO_ReadPin(OPTO_INPUT8_GPIO_Port, OPTO_INPUT8_Pin)
+				== GPIO_PIN_SET)
+		{
+			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+					&can_frame_template, 3, SDO_DOWNLOAD, 0x06, 1, 0, 0, 0, 0,
+					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x06, 1, 0, 0, 0, 0, 0, 0);
+
+		}
+		else
+		{
+			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+					&can_frame_template, 3, SDO_DOWNLOAD, 0x06, 0, 0, 0, 0, 0,
+					0);
+			UsbTransferDataByte(lights_controller.pdo_consumer_id, 0x06, 0, 0, 0, 0, 0, 0, 0);
+		}
+		HAL_Delay(10);
+	}
+
+	/*Charging state register*/
+	if (GPIO_Pin == OPTO_INPUT10_Pin)
+	{
+		if (HAL_GPIO_ReadPin(OPTO_INPUT10_GPIO_Port, OPTO_INPUT10_Pin)
+				== GPIO_PIN_SET)
+		{
+			charging = true;
+			UsbTransferDataByte(0x0C, 0x01, 0, 0, 0, 0, 0, 0, 0);
+			HAL_Delay(10);
+		}
+		else
+		{
+			charging = false;
+			UsbTransferDataByte(0x0C, 0x0, 0, 0, 0, 0, 0, 0, 0);
+			HAL_Delay(10);
+		}
+	}
+
+	if (GPIO_Pin == OPTO_INPUT11_Pin)
+		{
+		if (HAL_GPIO_ReadPin(OPTO_INPUT10_GPIO_Port, OPTO_INPUT11_Pin)
+				== GPIO_PIN_SET && !highVoltageActive) {
+			CanSendNmt(hcan1, OPERATIONAL_STATE, bms.node_id,
+					&can_frame_template);
+			highVoltageActive = true;
+			HAL_Delay(2);
+		}
+		else
+		{
+			CanSendNmt(hcan1, STOPPED_STATE, bms.node_id,
+					&can_frame_template);
+			highVoltageActive = true;
+		}
+	}
 }
 
 /* USER CODE END 2 */

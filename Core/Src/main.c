@@ -45,7 +45,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -72,6 +71,30 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+void sendZeroes()
+{
+	UsbTransferDataByte(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	HAL_Delay(100);
+	UsbTransferDataByte(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	HAL_Delay(100);
+	UsbTransferDataByte(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	HAL_Delay(100);
+	UsbTransferDataByte(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	HAL_Delay(100);
+	UsbTransferDataByte(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	HAL_Delay(100);
+	UsbTransferDataByte(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	HAL_Delay(100);
+	UsbTransferDataByte(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	HAL_Delay(100);
+	UsbTransferDataByte(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	HAL_Delay(100);
+	UsbTransferDataByte(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	HAL_Delay(100);
+	UsbTransferDataByte(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	HAL_Delay(2);
+
+}
 /************************************************************************************************
  PRIVATE VARIABLES
  ************************************************************************************************/
@@ -116,10 +139,11 @@ int main(void)
 	 CAN PERIPHERIAL AND ITS COMPONENTS
 	 ************************************************************************************************/
 	CanopenObjectDictInit();
-	CanConfigFilter(CAN_HIGH_SPEED, 1, 0x0000, 0x0000, 0x0000, 0x0000);
+
+	CanConfigFilter(CAN_HIGH_SPEED, 1);
 	CanInit(CAN_HIGH_SPEED);
 
-	CanConfigFilter(CAN_LOW_SPEED, 0, 0x0000, 0x0000, 0x0000, 0x0000);
+	CanConfigFilter(CAN_LOW_SPEED, 0);
 	CanInit(CAN_LOW_SPEED);
 
 	HAL_TIM_Base_Start_IT(&htim10);
@@ -127,65 +151,49 @@ int main(void)
 	/************************************************************************************************
 	 TURNING ON THE MODULES
 	 ************************************************************************************************/
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
-			&can_frame_template);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
-			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
+//			&can_frame_template);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
+//			&can_frame_template);
 	/************************************************************************************************
 	 USB
 	 ************************************************************************************************/
-
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+	error = false;
+	charging = false;
+	highVoltageActive = false;
 	while (1) {
 
-		HAL_Delay(1000);
-
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
-//					&can_frame_template);
-//			CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
-//					&can_frame_template);
-
-		//initializing data upload
-		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 0, 1, 0, 0, 0, 0, 0, 0, 0);
-
-		//actual data upload.
-		CanSendSdo(CAN_HIGH_SPEED, bms.sdo_upload_id, &can_frame_template , 2, 2, 0, 0, 0, 0, 0, 0, 0);
-
-
+//		SendAllFramesForDashboard();
+		sendZeroes();
+//		UsbTransferDataByte(0x581, 0, 2, 1, 0, 0, 0, 0, 0);
+		HAL_Delay(10);
+		sendZeroes();
+//		UsbTransferDataByte(0x581, 0, 2, 0, 0, 0, 0, 0, 0);
+		HAL_Delay(100);
+		//ChargingStateModule();
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 
 	}
+
   /* USER CODE END 3 */
 }
 
@@ -233,7 +241,102 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void SendAllFramesForDashboard()
+	{
 
+		UsbTransferDataByte(0x581, 0x03, 0x01, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x581, 0x01, 0x01, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x581, 0x02, 0x01, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x87, 0x01, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x85, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x290, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x185, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0X186, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x187, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x188, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x189, 0x0F, 0x0F, 0x0F, 0x1F, 0x0F, 0x1F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x18A, 0x0F, 0x1F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x18B, 0x0F, 0x0F, 0x3f, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x395, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x55, 0x0F, 0x0F, 0x0F, 0x0, 0x0, 0x00, 0x00, 0x00);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x90, 0x03, 0, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x0);
+		HAL_Delay(100);
+	}
+
+void SendAllFramesForDashboardCharging()
+	{
+		UsbTransferDataByte(0x87, 0x01, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x185, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0X186, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x187, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x188, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x189, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x18A, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x18B, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+				0x0F);
+		HAL_Delay(100);
+
+		UsbTransferDataByte(0x55, 0x0F, 0x0F, 0x0F, 0x0, 0x0, 0x00, 0x00, 0x00);
+		HAL_Delay(100);}
 /* USER CODE END 4 */
 
 /**

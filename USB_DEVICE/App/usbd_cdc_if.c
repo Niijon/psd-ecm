@@ -342,24 +342,44 @@ void UsbTransfer(CanDataFrameInit *ptr_can_frame_template) {
 //	uint8_t usb_tx_data_buffer[buffer_size];
 
 	message_length = sprintf(&usb_tx_data_buffer,
-			"%03X[%01X]%02X%02X%02X%02X%02X%02X%02X%02X\r\n", // 050[8]DEADBEEFFEEDDEAD
-			ptr_can_frame_template->rx_header.StdId,
-			ptr_can_frame_template->rx_header.DLC,
-			ptr_can_frame_template->rx_data[0],
-			ptr_can_frame_template->rx_data[1],
-			ptr_can_frame_template->rx_data[2],
-			ptr_can_frame_template->rx_data[3],
-			ptr_can_frame_template->rx_data[4],
-			ptr_can_frame_template->rx_data[5],
-			ptr_can_frame_template->rx_data[6],
-			ptr_can_frame_template->rx_data[7]);
+			"%3X[%01X]%02X%02X%02X%02X%02X%02X%02X%02X\r\n", // 050[8]DEADBEEFFEEDDEAD
+			ptr_can_frame_template->tx_header.StdId,
+			ptr_can_frame_template->tx_header.DLC,
+			ptr_can_frame_template->tx_data[0],
+			ptr_can_frame_template->tx_data[1],
+			ptr_can_frame_template->tx_data[2],
+			ptr_can_frame_template->tx_data[3],
+			ptr_can_frame_template->tx_data[4],
+			ptr_can_frame_template->tx_data[5],
+			ptr_can_frame_template->tx_data[6],
+			ptr_can_frame_template->tx_data[7]);
+	CDC_Transmit_HS(usb_tx_data_buffer, message_length);
+
+}
+
+void UsbTransferDataByte(uint32_t nodeId, uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4,  uint8_t byte5, uint8_t byte6, uint8_t byte7){
+//	uint8_t buffer_size = ptr_can_frame_template->rx_header.DLC * 2 + 7;
+//	uint8_t usb_tx_data_buffer[buffer_size];
+
+	message_length = sprintf(&usb_tx_data_buffer,
+			"%3X[%01X]%02X%02X%02X%02X%02X%02X%02X%02X\r\n", // 050[8]DEADBEEFFEEDDEAD
+			nodeId,
+			8,
+			byte0,
+			byte1,
+			byte2,
+			byte3,
+			byte4,
+			byte5,
+			byte6,
+			byte7);
 	CDC_Transmit_HS(usb_tx_data_buffer, message_length);
 
 }
 
 void UsbTransferData(uint8_t node_id, uint8_t *data) {
 	message_length = sprintf(uart_data_to_send,
-			"USB: [%02X]%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X\r", node_id,
+			"USB: [%02X]%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X\r\n", node_id,
 			data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
 	CDC_Transmit_HS(&uart_data_to_send, message_length);
 
