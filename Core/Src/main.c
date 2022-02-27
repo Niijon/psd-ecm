@@ -175,19 +175,24 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	error = false;
-	charging = false;
+	charging = true;
 	highVoltageActive = false;
 	while (1) {
 
 //		SendAllFramesForDashboard();
-		sendZeroes();
+//		sendZeroes();
 //		UsbTransferDataByte(0x581, 0, 2, 1, 0, 0, 0, 0, 0);
-		HAL_Delay(10);
-		sendZeroes();
+//		HAL_Delay(10);
+//		sendZeroes();
 //		UsbTransferDataByte(0x581, 0, 2, 0, 0, 0, 0, 0, 0);
-		HAL_Delay(100);
+//		HAL_Delay(100);
 		//ChargingStateModule();
+		CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8,
+				0x02, 0x6C, 0, 0xB4, 0, 0, 0, 0);
 
+		CanClearRxDataFrame(&can_rx_frame_template);
+
+		HAL_Delay(999);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
