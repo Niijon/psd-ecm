@@ -65,6 +65,17 @@ typedef struct CanDataFrameInit{
 	uint8_t rx_data[8];
 } CanDataFrameInit;
 
+typedef struct Charger{
+	uint8_t voltage_higher_byte;
+	uint8_t voltage_lower_byte;
+	uint8_t current_higher_byte;
+	uint8_t current_lower_byte;
+	uint16_t max_current;
+	uint16_t max_voltage;
+	uint32_t can_charger_id;
+	uint32_t can_receiving_id;
+}Charger;
+
 #define byteMaxValue 256
 
 /*Mini math lib declarations*/
@@ -129,6 +140,7 @@ void MX_CAN2_Init(void);
 /* USER CODE BEGIN Prototypes */
 void ActUponCurrentAndVoltage(CanDataFrameInit *canFrame, int maxVoltage, int maxCurrent);
 void ChargingStateModule();
+void InitCharger(uint16_t charging_voltage, uint16_t charging_current);
 void DrivingStateModule();
 void BMSWarningHandler(CanDataFrameInit *canFrame);
 /*Only optional to talk out with people*/

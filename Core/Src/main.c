@@ -59,7 +59,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint16_t charging_voltage = 600; // set to 600 gives 60 V[Onepack], if set to 1200 gives 120 V[two packs]
+uint16_t charging_current = 180; // set to 180 gives 18 A, up to about 28 A
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -145,6 +146,7 @@ int main(void)
 
 	CanConfigFilter(CAN_LOW_SPEED, 0);
 	CanInit(CAN_LOW_SPEED);
+	InitCharger(charging_voltage, charging_current);
 
 	HAL_TIM_Base_Start_IT(&htim10);
 
@@ -187,12 +189,12 @@ int main(void)
 //		UsbTransferDataByte(0x581, 0, 2, 0, 0, 0, 0, 0, 0);
 //		HAL_Delay(100);
 		//ChargingStateModule();
-		CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8,
-				0x02, 0x6C, 0, 0xB4, 0, 0, 0, 0);
-
-		CanClearRxDataFrame(&can_rx_frame_template);
-
-		HAL_Delay(999);
+//		CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8,
+//				0x02, 0x6C, 0, 0xB4, 0, 0, 0, 0);
+//
+//		CanClearRxDataFrame(&can_rx_frame_template);
+//
+//		HAL_Delay(999);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

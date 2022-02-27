@@ -41,6 +41,8 @@ bool charging;
 bool highVoltageActive;
 uint32_t can_tx_mailbox;
 
+Charger tc_charger;
+
 /* USER CODE END 0 */
 
 CAN_HandleTypeDef hcan1;
@@ -660,14 +662,30 @@ GluedBytes MakeGluedBytes(uint8_t lowerByte, uint8_t higherByte)
 //		charging = canFrame->rx_header.ExtId == 0x18FF50E5;
 //}
 
-void ChargingStateModule()
-{
+// Charging Section
+void InitCharger(uint16_t charging_voltage, uint16_t charging_current){
+	tc_charger.max_voltage = charging_voltage;
+	tc_charger.max_current = charging_current;
+
+	tc_charger.voltage_higher_byte = (uint8_t)(charging_voltage >> 8);
+	tc_charger.voltage_lower_byte = (uint8_t)(charging_voltage & 0xFF);
+
+	tc_charger.current_higher_byte = (uint8_t)(charging_current >> 8);
+	tc_charger.current_lower_byte = (uint8_t)(charging_current & 0xFF);
+
+	tc_charger.can_charger_id = 0x1806E5F4;
+	tc_charger.can_receiving_id = 0x18FF50E5;
+}
+
+void ChargingStateModule(){
 	if (charging == true && error == false)
 	{
 		UsbTransferDataByte(0x1C, 0x01, 0, 0, 0, 0, 0, 0, 0);
 		HAL_Delay(1);
-		CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8,
-				0x03, 0xE8, 0, 10, 0, 0, 0, 0);
+		CanSendExtendedIdMessage(hcan1, &can_frame_template, tc_charger.can_charger_id, 8,
+				tc_charger.voltage_higher_byte, tc_charger.voltage_lower_byte,
+				tc_charger.current_higher_byte, tc_charger.current_lower_byte, 0, 0, 0, 0);
+				// 0x02, 0x6C, 0x00, 0xB4
 
 		CanClearRxDataFrame(&can_rx_frame_template);
 		HAL_Delay(1000);
