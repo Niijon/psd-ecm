@@ -59,7 +59,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint16_t charging_voltage = 600; // set to 600 gives 60 V[Onepack], if set to 1200 gives 120 V[two packs]
+uint16_t charging_voltage = 588; // set to 600 gives 60 V[Onepack], if set to 1200 gives 120 V[two packs]
 uint16_t charging_current = 180; // set to 180 gives 18 A, up to about 28 A
 /* USER CODE END PV */
 
@@ -150,35 +150,13 @@ int main(void)
 
 	HAL_TIM_Base_Start_IT(&htim10);
 
-	/************************************************************************************************
-	 TURNING ON THE MODULES
-	 ************************************************************************************************/
-//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
-//			&can_frame_template);
-//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
-//			&can_frame_template);
-//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
-//			&can_frame_template);
-//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
-//			&can_frame_template);
-//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
-//			&can_frame_template);
-//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
-//			&can_frame_template);
-//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
-//			&can_frame_template);
-//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
-//			&can_frame_template);
-	/************************************************************************************************
-	 USB
-	 ************************************************************************************************/
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	error = false;
-	charging = true;
-	highVoltageActive = false;
+	setError(false);
+	setCharging(true);
+	setHighVoltage(false);
 	while (1) {
 
 //		SendAllFramesForDashboard();
@@ -344,6 +322,14 @@ void SendAllFramesForDashboardCharging()
 
 		UsbTransferDataByte(0x55, 0x0F, 0x0F, 0x0F, 0x0, 0x0, 0x00, 0x00, 0x00);
 		HAL_Delay(100);}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+	if(htim->Instance == TIM10){ // 1Hz/1s timer
+		HAL_GPIO_TogglePin(LED_D4_GPIO_Port, LED_D4_Pin);
+		ChargingStateModule();
+	}
+}
+
 /* USER CODE END 4 */
 
 /**

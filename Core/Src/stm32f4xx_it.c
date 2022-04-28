@@ -416,16 +416,6 @@ void TIM1_UP_TIM10_IRQHandler(void)
   HAL_TIM_IRQHandler(&htim10);
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
 
-	/************************************************************************************************
-	 TIMER 10Hz INTERRUPT HANDLING
-	 ************************************************************************************************/
-	HAL_GPIO_TogglePin(LED_D4_GPIO_Port, LED_D4_Pin);
-
-//	if( (charging == true) && (error == false) )
-//	{
-//		ChargingStateModule();
-//	}
-
   /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
 }
 

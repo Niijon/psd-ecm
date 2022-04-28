@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -673,8 +673,8 @@ void InitCharger(uint16_t charging_voltage, uint16_t charging_current){
 	tc_charger.current_higher_byte = (uint8_t)(charging_current >> 8);
 	tc_charger.current_lower_byte = (uint8_t)(charging_current & 0xFF);
 
-	tc_charger.can_charger_id = 0x1806E5F4;
-	tc_charger.can_receiving_id = 0x18FF50E5;
+	tc_charger.can_charger_id = 0x1806E5F4; // Setting TC id for charging instruction via CAN
+	tc_charger.can_receiving_id = 0x18FF50E5; // Setting TC id for receiving information via CAN
 }
 
 void ChargingStateModule(){
@@ -702,81 +702,76 @@ void ChargingStateModule(){
 }
 
 
-void ReverseManagement(CanDataFrameInit *canFrame)
+void ReverseManagement(CanDataFrameInit *can_frame)
 {
-	if(canFrame->rx_header.StdId == 0x90)
+	if(can_frame->rx_header.StdId == 0x90)
 	{
-		if(canFrame->rx_data[0] == 0x4)
+		if(can_frame->rx_data[0] == 0x4)
 		{
 			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
 					&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 1, 0, 0, 0, 0,
 					0);
 		}
 
-		else if (canFrame->rx_data[0] == 0x3)
+		else if (can_frame->rx_data[0] == 0x3)
 		{
 			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
 					&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 0, 0, 0, 0, 0,
 					0);
 		}
-		else if(canFrame->rx_data[0] == 0x0)
+		else if(can_frame->rx_data[0] == 0x0)
 		{
 			error = true;
 		}
 	}
 }
 
-void BMSWarningHandler(CanDataFrameInit *canFrame)
+void BMSWarningHandler(CanDataFrameInit *can_frame)
 {
-	if(canFrame->rx_header.StdId == 0x86)
+	if(can_frame->rx_header.StdId == 0x86)
 	{
 		CanSendPdo(hcan1, 0x87, 8, &can_frame_template,
-				0x01 & canFrame->rx_data[0],
-				(0x02 & canFrame->rx_data[0]) >> 1,
-				(0x04 & canFrame->rx_data[0]) >> 2,
-				(0x08 & canFrame->rx_data[0]) >> 3,
-				(0x10 & canFrame->rx_data[0]) >> 4,
+				0x01 & can_frame->rx_data[0],
+				(0x02 & can_frame->rx_data[0]) >> 1,
+				(0x04 & can_frame->rx_data[0]) >> 2,
+				(0x08 & can_frame->rx_data[0]) >> 3,
+				(0x10 & can_frame->rx_data[0]) >> 4,
 				0, 0, 0);
 	}
 }
 
-/*Only optional to talk out with people*/
-void ParkingStateModule()
-{
-
-}
 
 /*CHARGING ACTIONS BEGIN*/
-void ActUponCurrentAndVoltage(CanDataFrameInit *canFrame, int maxVoltage, int maxCurrent)
+void ActUponCurrentAndVoltage(CanDataFrameInit *can_frame, int maxVoltage, int maxCurrent)
 {
-	int voltage = unParse2Bytes(canFrame->rx_data[1], canFrame->rx_data[0]);
-	int current = unParse2Bytes(canFrame->rx_data[3], canFrame->rx_data[2]);
+	int voltage = unParse2Bytes(can_frame->rx_data[1], can_frame->rx_data[0]);
+	int current = unParse2Bytes(can_frame->rx_data[3], can_frame->rx_data[2]);
 	testMath(voltage);
 	error = ( (voltage>maxVoltage) || (current>maxCurrent) );
 }
 
-void CatchChargingErrorOccuring(CanDataFrameInit *canFrame)
+void CatchChargingErrorOccuring(CanDataFrameInit *can_frame)
 {
-	error = ( canFrame->rx_data[4] != 0 );
+	error = ( can_frame->rx_data[4] != 0 );
 }
 /*CHARGING ACTIONS END*/
 
 /*DRIVING ACTIONS BEGIN*/
-void CatchErrorOccuring(CanDataFrameInit *canFrame)
+void CatchErrorOccuring(CanDataFrameInit *can_frame)
 {
 	/* BMS Errors handling */
-	if( (canFrame->rx_header.StdId == 0x85) )
+	if( (can_frame->rx_header.StdId == 0x85) )
 	{
 		error = true;
 		StopCanCommunication();
 	}
 }
 
-void WarningHandler(CanDataFrameInit *canFrame)
+void WarningHandler(CanDataFrameInit *can_frame)
 {
-	if(canFrame->rx_header.StdId == 0x55)
+	if(can_frame->rx_header.StdId == 0x55)
 	{
-		SendErrorFrame(canFrame->rx_data[1], canFrame->rx_data[2]);
+		SendErrorFrame(can_frame->rx_data[1], can_frame->rx_data[2]);
 	}
 }
 
@@ -792,9 +787,34 @@ void SendErrorFrame(uint8_t highCondition, uint8_t lowCondition)
 	}
 }
 
-
 /*DRIVING ACTIONS END*/
 /*CAN COMMUNICATION SECTION END*/
+
+/* Data assigning */
+void setCharging(bool chargingSetter){
+	charging = chargingSetter;
+}
+
+void setError(bool errorSetter){
+	error = errorSetter;
+}
+
+void setHighVoltage(bool setter){
+	highVoltageActive = setter;
+}
+
+bool getCharging(){
+	return charging;
+}
+
+bool getError(){
+	return error;
+}
+
+bool getHighVoltage(){
+	return highVoltageActive;
+}
+
 
 /* USER CODE END 1 */
 

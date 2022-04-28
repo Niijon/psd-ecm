@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -258,13 +258,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		if (HAL_GPIO_ReadPin(OPTO_INPUT10_GPIO_Port, OPTO_INPUT10_Pin)
 				== GPIO_PIN_SET)
 		{
-			charging = true;
+			setCharging(true);
 			UsbTransferDataByte(0x0C, 0x01, 0, 0, 0, 0, 0, 0, 0);
 			HAL_Delay(10);
 		}
 		else
 		{
-			charging = false;
+			setCharging(false);
 			UsbTransferDataByte(0x0C, 0x0, 0, 0, 0, 0, 0, 0, 0);
 			HAL_Delay(10);
 		}
@@ -276,14 +276,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 				== GPIO_PIN_SET && !highVoltageActive) {
 			CanSendNmt(hcan1, OPERATIONAL_STATE, bms.node_id,
 					&can_frame_template);
-			highVoltageActive = true;
+			setHighVoltage(true);
 			HAL_Delay(2);
 		}
 		else
 		{
 			CanSendNmt(hcan1, STOPPED_STATE, bms.node_id,
 					&can_frame_template);
-			highVoltageActive = true;
+			setHighVoltage(false);
+			HAL_Delay(2);
 		}
 	}
 }
