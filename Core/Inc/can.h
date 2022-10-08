@@ -153,6 +153,7 @@ void ReverseManagement(CanDataFrameInit *canFrame);
 void setCharging(bool chargingSetter);
 void setError(bool errorSetter);
 void setHighVoltage(bool setter);
+void TCChargeCommand(CanDataFrameInit *can_frame);
 
 /* USER CODE END Prototypes */
 
