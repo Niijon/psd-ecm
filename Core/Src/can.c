@@ -754,6 +754,19 @@ void CatchChargingErrorOccuring(CanDataFrameInit *can_frame)
 {
 	error = ( can_frame->rx_data[4] != 0 );
 }
+
+void TCChargeCommand(CanDataFrameInit *can_frame) {
+	uint8_t low_voltage = 0x6C;
+	uint8_t high_voltage = 0x02;
+	uint8_t low_current = 0xB4;
+	uint8_t high_current = 0x00;
+	/* How it works:
+	 * numbers can be read as uint16_t packets together which means that:
+	 * - for low_voltage = 0x6C and high_voltage = 0x02 we will get 0x026C
+	 * Which after converting to decimal is = 62V, the same applies to current */
+	CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8,
+			high_voltage, low_voltage, high_current, low_current, 0, 0, 0, 0);
+}
 /*CHARGING ACTIONS END*/
 
 /*DRIVING ACTIONS BEGIN*/

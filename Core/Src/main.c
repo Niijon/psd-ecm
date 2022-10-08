@@ -173,6 +173,10 @@ int main(void)
 //		CanClearRxDataFrame(&can_rx_frame_template);
 //
 //		HAL_Delay(999);
+		CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8,
+					high_voltage, low_voltage, high_current, low_current, 0, 0, 0, 0);
+		HAL_Delay(500);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
