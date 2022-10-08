@@ -19,7 +19,7 @@
  INCLUDES
  ************************************************************************************************/
 #include "can.h"
-#include "canopen_object_dict.h"
+//#include "canopen_object_dict.h"
 #include "usbd_cdc_if.h"
 
 /* USER CODE END Includes */
@@ -51,10 +51,10 @@
 //extern CanDataFrameInit can_frame_template;
 //uint8_t DataToSend[80];
 //extern CanDataFrameInit *p_can_frame_template;
-	bool_t day_state;
-	bool_t emcy_state;
-	bool_t reverse_state;
-	bool_t daylight_state;
+//	bool_t day_state;
+//	bool_t emcy_state;
+//	bool_t reverse_state;
+//	bool_t daylight_state;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -342,7 +342,7 @@ void CAN1_RX0_IRQHandler(void)
 
 	BMSWarningHandler(&can_rx_frame_template);
 
-	ReverseManagement(&can_rx_frame_template);
+//	ReverseManagement(&can_rx_frame_template);
 
 
   /* USER CODE END CAN1_RX0_IRQn 1 */

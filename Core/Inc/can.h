@@ -29,6 +29,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
 #include <stdio.h>
+
 /* USER CODE END Includes */
 
 extern CAN_HandleTypeDef hcan1;

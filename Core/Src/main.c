@@ -38,7 +38,6 @@
 /************************************************************************************************
  PRIVATE INCLUDES
  ************************************************************************************************/
-#include "canopen_object_dict.h"
 #include "usbd_cdc_if.h"
 
 /* USER CODE END Includes */
@@ -167,14 +166,14 @@ int main(void)
 //		UsbTransferDataByte(0x581, 0, 2, 0, 0, 0, 0, 0, 0);
 //		HAL_Delay(100);
 		//ChargingStateModule();
-//		CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8,
-//				0x02, 0x6C, 0, 0xB4, 0, 0, 0, 0);
-//
-//		CanClearRxDataFrame(&can_rx_frame_template);
-//
-//		HAL_Delay(999);
-		TCChargeCommand(&can_frame_template);
-		HAL_Delay(500);
+		CanSendExtendedIdMessage(hcan1, &can_frame_template, 0x1806E5F4, 8,
+				0x02, 0x4B, 0, 0xB4, 0, 0, 0, 0);
+
+		CanClearRxDataFrame(&can_rx_frame_template);
+
+		HAL_Delay(999);
+//		TCChargeCommand(&can_frame_template);
+//		HAL_Delay(100);
 
     /* USER CODE END WHILE */
 

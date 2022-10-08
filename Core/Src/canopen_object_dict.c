@@ -6,7 +6,7 @@
   ******************************************************************************
   */
 
-#include <canopen_object_dict.h>
+#include "canopen_object_dict.h"
 
 void CanopenObjectDictInit() {
 	dashboard.node_id = 0x70;

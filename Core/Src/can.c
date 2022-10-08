@@ -22,7 +22,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "usbd_cdc_if.h"
-#include "canopen_object_dict.h"
+//#include "canopen_object_dict.h"
 
 /************************************************************************************************
  GLOBAL VARIABLES
@@ -464,61 +464,61 @@ void CanSendSdo(CAN_HandleTypeDef chosen_network, uint32_t frame_sdo_id,
 	}
 }
 
-void StartCanCommunication()
-{
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
-		&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-}
-
-void StopCanCommunication()
-{
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, bms.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_1.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_2.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_1.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_2.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_3.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, lights_controller.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, dashboard.node_id,
-			&can_frame_template);
-	HAL_Delay(1);
-}
+//void StartCanCommunication()
+//{
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, bms.node_id,
+//		&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_1.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, inverter_2.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_1.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_2.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, mppt_3.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, lights_controller.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, OPERATIONAL_STATE, dashboard.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//}
+//
+//void StopCanCommunication()
+//{
+//	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, bms.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_1.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, inverter_2.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_1.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_2.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, mppt_3.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, lights_controller.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//	CanSendNmt(CAN_HIGH_SPEED, STOPPED_STATE, dashboard.node_id,
+//			&can_frame_template);
+//	HAL_Delay(1);
+//}
 
 /**
  * @brief Transfer specific CAN data frame to selected low or high speed network
@@ -691,7 +691,7 @@ void ChargingStateModule(){
 		HAL_Delay(1000);
 		if (error == true)
 		{
-			StopCanCommunication();
+//			StopCanCommunication();
 		}
 	}
 	else if(charging == false)
@@ -702,29 +702,29 @@ void ChargingStateModule(){
 }
 
 
-void ReverseManagement(CanDataFrameInit *can_frame)
-{
-	if(can_frame->rx_header.StdId == 0x90)
-	{
-		if(can_frame->rx_data[0] == 0x4)
-		{
-			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-					&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 1, 0, 0, 0, 0,
-					0);
-		}
-
-		else if (can_frame->rx_data[0] == 0x3)
-		{
-			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
-					&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 0, 0, 0, 0, 0,
-					0);
-		}
-		else if(can_frame->rx_data[0] == 0x0)
-		{
-			error = true;
-		}
-	}
-}
+//void ReverseManagement(CanDataFrameInit *can_frame)
+//{
+//	if(can_frame->rx_header.StdId == 0x90)
+//	{
+//		if(can_frame->rx_data[0] == 0x4)
+//		{
+//			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+//					&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 1, 0, 0, 0, 0,
+//					0);
+//		}
+//
+//		else if (can_frame->rx_data[0] == 0x3)
+//		{
+//			CanSendSdo(CAN_LOW_SPEED, lights_controller.pdo_consumer_id,
+//					&can_frame_template, 3, SDO_DOWNLOAD, 0x04, 0, 0, 0, 0, 0,
+//					0);
+//		}
+//		else if(can_frame->rx_data[0] == 0x0)
+//		{
+//			error = true;
+//		}
+//	}
+//}
 
 void BMSWarningHandler(CanDataFrameInit *can_frame)
 {
@@ -776,7 +776,7 @@ void CatchErrorOccuring(CanDataFrameInit *can_frame)
 	if( (can_frame->rx_header.StdId == 0x85) )
 	{
 		error = true;
-		StopCanCommunication();
+//		StopCanCommunication();
 	}
 }
 
